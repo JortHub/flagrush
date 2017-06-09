@@ -1,0 +1,10 @@
+{
+	"name": "flagrush.io",
+	"version": "0.0.1",
+	"author": "JortvD",
+	"main": "sub.js",
+	"dependencies": {
+		"express": "*",
+		"socket.io": "^2.0.2"
+	}
+}
