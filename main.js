@@ -26,8 +26,6 @@ app.get('*', function(req, res){
 
 // Connection
 io.on('connection', function(socket){
-  console.log("New client: " + socket.id);
-
   socket.on("broadcast", function() {
   	
   });

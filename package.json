@@ -5,6 +5,7 @@
 	"main": "sub.js",
 	"dependencies": {
 		"express": "*",
+		"node-gameloop": "^0.1.4",
 		"socket.io": "^2.0.2"
 	}
 }
