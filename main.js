@@ -1,7 +1,9 @@
 var express = require('express');
 var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var server = app.listen(8888);
+var io = require('socket.io').listen(server);
+
+console.log("Main server started on the port 8888");
 
 var servers = [
 	
@@ -31,11 +33,6 @@ io.on('connection', function(socket){
   });
 
   socket.emit("server", chooseServer());
-});
-
-// Listen for requests on port 8888
-http.listen(8888, function() {
-	console.log("Main server started on the port 8888");
 });
 
 // Create a server JUST FOR NOW

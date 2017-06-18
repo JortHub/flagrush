@@ -1,60 +1,92 @@
 module.exports = {
 	player: function(io, socket, name) {
+		var self = {};
+
 		// The position and rotation
-		this.x = 0;
-		this.y = 0;
-		this.r = 0;
+		self.x = 0;
+		self.y = 0;
+		self.r = 0;
 
 		// Some socket information
-		this.socket = socket;
-		this.io = io;
+		self.socket = socket;
+		self.io = io;
 
 		// The name of the player
-		this.name = name;
+		self.name = name;
 
 		// The team and type of the player
-		this.team = 0;
-		this.type = 0;
+		self.team = 0;
+		self.type = 0;
 
 		// The current hold buttons
-		this.buttons = [];
+		self.buttons = [];
 
 		// The force the player has
-		this.forceX = 0;
-		this.forceY = 0;
-		this.forceR = 0;
+		self.forceX = 0;
+		self.forceY = 0;
+		self.forceR = 0;
+
+		self.max = 100;
 
 
-		this.generateLocation = function() {
-
-		}
-
-		this.updatePlayers = function(players) {
+		self.generateLocation = function() {
 
 		}
 
-		this.hold = function(button, state) {
-			this.buttons[button] = state;
+		self.updatePlayers = function(players) {
+			for(var n in players) {
+				var player = players[n];
+				if((player.x - self.x <= self.max || player.x - self.x >= -self.max) && 
+				   (player.y - self.y <= self.max || player.y - self.y >= -self.max)) {
+					socket.emit("move", player.name, player.x, player.y, player.r);
+				}
+			}
 		}
 
-		this.isHold = function(button) {
+		self.updateMyself = function() {
+			socket.emit("move", self.name, self.x, self.y, self.r);
+		}
+
+		self.hold = function(button, state) {
+			self.buttons[button] = state;
+		}
+
+		self.isHold = function(button) {
 			return button[button];
 		}
 
-		this.addForce = function(forceX, forceY, forceZ) {
-			this.forceX += forceX;
-			this.forceY += forceY;
-			this.forceZ += forceZ;
+		self.addForce = function(forceX, forceY, forceR) {
+			self.forceX += forceX;
+			self.forceY += forceY;
+			self.forceR += forceR;
+
+			if(self.forceX > 10) self.forceX = 10;
+			if(self.forceX < -10) self.forceX = -10;
+
+			if(self.forceY > 10) self.forceY = 10;
+			if(self.forceY < -10) self.forceY = -10;
+
+			if(self.forceR > 10) self.forceR = 10;
+			if(self.forceR < -10) self.forceR = -10;
 		}
 
-		this.removeForce = function(forceX, forceY, forceZ) {
-			this.forceX -= forceX;
-			this.forceY -= forceY;
-			this.forceZ -= forceZ;
+		self.removeForce = function(forceX, forceY, forceR) {
+			self.forceX -= forceX;
+			self.forceY -= forceY;
+			self.forceR -= forceR;
+
+			if(self.forceX > 10) self.forceX = 10;
+			if(self.forceX < -10) self.forceX = -10;
+
+			if(self.forceY > 10) self.forceY = 10;
+			if(self.forceY < -10) self.forceY = -10;
+
+			if(self.forceR > 10) self.forceR = 10;
+			if(self.forceR < -10) self.forceR = -10;
 		}
 
-		this.generateLocation();
+		self.generateLocation();
 
-		return this;
+		return self;
 	}
 }

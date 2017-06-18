@@ -1,37 +1,39 @@
 var viewport = function(canvas) {
-	this.minScale = 1;
-	this.maxViewDistance = 1000;
-	this.scale = 1;
+	var self = {};
 
-	this.resize = function() {
+	self.minScale = 1;
+	self.maxViewDistance = 1000;
+	self.scale = 1;
+
+	self.resize = function() {
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 		
 		var aspect = (window.innerWidth / window.innerHeight);
 		
 		if(aspect > 1) { 
-			if(canvas.width > (this.minScale * this.maxViewDistance)) {
-				this.scale = (canvas.width / this.maxViewDistance);
+			if(canvas.width > (self.minScale * self.maxViewDistance)) {
+				self.scale = (canvas.width / self.maxViewDistance);
 			}
 			else {
-				this.scale = this.minScale;
+				self.scale = self.minScale;
 			}
 		}
 		else {
-			if(canvas.height > (this.minScale * this.maxViewDistance)) {
-				this.scale = (canvas.height / this.maxViewDistance);
+			if(canvas.height > (self.minScale * self.maxViewDistance)) {
+				self.scale = (canvas.height / self.maxViewDistance);
 			}
 			else {
-				this.scale = this.minScale;
+				self.scale = self.minScale;
 			}
 		}
 	}
 
-	this.resize();
+	self.resize();
 
 	window.onresize = function() {
-		this.resize();
+		self.resize();
 	}
 
-	return this;
+	return self;
 }

@@ -1,6 +1,11 @@
 var canvas = document.getElementById('cvs');
+var ctx = canvas.getContext("2d");
 var gui = document.getElementById('gui');
 var view = new viewport(canvas);
+var gameloop = new gameloop(update);
+var input = new input(input);
+var players = {};
+var me;
 
 var main = io();
 var server = null;
@@ -16,105 +21,95 @@ main.on("server" , function(arg) {
 	start();
 });
 
+main.on("disconnect", function() {
+	main.close();
+});
+
+window.onunload = function(){
+	main.close();
+	if(server != null) server.close();
+};
+
 function start() {
-	server.on("joined", function() {
-		console.log("Joined");
+	server.on("joined", function(name) {
+		console.log("Joined, " + name + " (" + new Date().toLocaleTimeString() + ")");
+		me = new player();
+		me.name = name;
+		players[name] = me;
 	});
 
+	server.on("spawn", function(name, x, y, r) {
+		if(name != me.name) {
+			console.log("Player " + name + " joined");
+
+			var p = new player();
+			p.name = name;
+			p.x = x;
+			p.y = y;
+			p.r = r;
+			players[name] = p;
+		}
+		else {
+			var p = players[name];
+			p.x = x;
+			p.y = y;
+			p.r = r;
+		}
+	});
+
+	server.on("leave", function(name) {
+		console.log("Player " + name + " left");
+
+		delete players[name];
+	});
+
+	server.on("move", function(name, x, y, r) {
+		var p = players[name];
+		p.x = x;
+		p.y = y;
+		p.r = r;
+	});
+
+	server.on("disconnect", function() {
+		console.log("Left (" + new Date().toLocaleTimeString() + ")");
+		server.close();
+	});
+	
 	server.emit("join");
 }
 
-function doPolygonsIntersect (a, b) {
-    var polygons = [a, b];
-    var minA, maxA, projected, i, i1, j, minB, maxB;
+gameloop.start();
 
-    for (i = 0; i < polygons.length; i++) {
-
-        // for each polygon, look at each edge of the polygon, and determine if it separates
-        // the two shapes
-        var polygon = polygons[i];
-        for (i1 = 0; i1 < polygon.length; i1++) {
-
-            // grab 2 vertices to create an edge
-            var i2 = (i1 + 1) % polygon.length;
-            var p1 = polygon[i1];
-            var p2 = polygon[i2];
-
-            // find the line perpendicular to this edge
-            var normal = { x: p2.y - p1.y, y: p1.x - p2.x };
-
-            minA = maxA = undefined;
-            // for each vertex in the first shape, project it onto the line perpendicular to the edge
-            // and keep track of the min and max of these values
-            for (j = 0; j < a.length; j++) {
-                projected = normal.x * a[j].x + normal.y * a[j].y;
-                if (minA == null || projected < minA) {
-                    minA = projected;
-                }
-                if (maxA == null || projected > maxA) {
-                    maxA = projected;
-                }
-            }
-
-            // for each vertex in the second shape, project it onto the line perpendicular to the edge
-            // and keep track of the min and max of these values
-            minB = maxB = undefined;
-            for (j = 0; j < b.length; j++) {
-                projected = normal.x * b[j].x + normal.y * b[j].y;
-                if (minB == null || projected < minB) {
-                    minB = projected;
-                }
-                if (maxB == null || projected > maxB) {
-                    maxB = projected;
-                }
-            }
-
-            // if there is no overlap between the projects, the edge we are looking at separates the two
-            // polygons, and we know there is no overlap
-            if (maxA < minB || maxB < minA) {
-                return false;
-            }
-        }
-    }
-    return true;
-};
-
-var s = window.performance.now();
-
-function hasSeparatingAxis(a, b)
-{
-    // test each side of a in turn:
-    for(i = 0; i < a.side_count; i++)
-    {
-        normal_x = a.verts[(i+1)%a.side_count].y - a.verts[i].y;
-        normal_y = a.verts[i].x - a.verts[(i+1)%a.side_count].x;
-
-        for(j = 0; j < b.side_count; j++)
-        {
-            dot_product = ((b.vert[j].x - a.verts[i].x) * normal_x) +
-                ((b.vert[j].y - a.verts[i].y) * normal_y);
-            if(dot_product <= 0.0) // change sign of test based on winding order
-                break;
-            if(j == b.side_count-1)
-                return true; // all dots were +ve, we found a separating axis
-        }
-   }
-   return false;
+function update() {
+	for(var n in players) {
+		ctx.fillRect(players[n].x, players[n].x, 100, 100);
+	}
 }
 
-function intersects(a, b)
-{
-    return !hasSeparatingAxis(a, b) && !hasSeparatingAxis(b, a);
+function input(button, state) {
+	console.log("TEST");
+	if(server != null) {
+		server.emit("input", button, state);
+	}
 }
 
-for(var i = 0; i < 100; i++) {
-	/*var intersect = intersects(
-		[{x: 0, y: 5}, {x: 5, y: 0}, {x: 20, y: 15}, {x: 15, y: 20}],
-		[{x: 16, y: 21}, {x: 21, y: 16}, {x: 35, y: 25}, {x: 25, y: 35}]
-	);*/
+
+/*var x1 = 0;
+var y1 = 0;
+var r1 = 20;
+
+var x2 = 30;
+var y2 = 0;
+var r2 = 20;
+
+// TEST3 //
+var s2 = window.performance.now();
+
+for(var z = 0; z < 100; z++) {
+	var c = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+	var collided = c < (r1 + r2);
 }
-	
 
-var e = window.performance.now();
+var e2 = window.performance.now();
 
-console.log("Speed: " + (e - s) + " ms");
+console.log("TEST3 = Speed: " + (e2 - s2) + " ms");*/

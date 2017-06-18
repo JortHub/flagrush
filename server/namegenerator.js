@@ -1,30 +1,32 @@
 module.exports = function() {
+	var self = {};
 
-	this.users = [];
-	this.max = 9999;
+	self.users = [];
+	self.max = 9999;
 
-	this.generate = function() {
-		return "Guest" + this.generateNumber();
+	self.generate = function() {
+		return "Guest" + self.generateNumber();
 	}
 
-	this.generateNumber = function() {
-		var n = Math.floor(Math.random() * (this.max + 1));
+	self.generateNumber = function() {
+		var n = Math.floor(Math.random() * (self.max + 1));
 
-		if(this.users.indexOf(n) >= 0) {
-			return this.generateNumber();
+		if(self.users.indexOf(n) >= 0) {
+			return self.generateNumber();
 		}
 		else {
-			this.users.push(n);
+			self.users.push(n);
 			return n;
 		}
 	}
 
-	this.removeNumber = function(n) {
+	self.removeNumber = function(n) {
 		n = n.replace("Guest", "");
 
-		this.users = this.users.filter(function(el) {
+		self.users = self.users.filter(function(el) {
 			return el !== n;
 		});
 	}
 
+	return self;
 }
