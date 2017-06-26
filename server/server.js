@@ -69,8 +69,6 @@ module.exports = function(io) {
 				else {
 					player.speedM -= self.decM;
 				}
-
-				//if(player.speedM > 0) console.log(player.name + ": " + player.speedM);
 			}
 
 			if(player.isHold(65)) {
@@ -109,39 +107,6 @@ module.exports = function(io) {
 		for(var n in self.players) {
 			var player = self.players[n];
 
-			/*if(player.forceR > 0) {
-				player.r += (player.forceR <= player.speedR) ? player.forceR : player.speedR;
-				player.forceR = (player.forceR <= player.speedR) ? 0 : player.forceR - player.speedR;
-			}
-			else {
-				player.r += (player.forceR >= -player.speedR) ? player.forceR : -player.speedR;
-				player.forceR = (player.forceR >= -player.speedR) ? 0 : player.forceR + player.speedR;
-			}
-
-			if(player.r > 360) {
-				player.r -= 360;
-			} 
-			else if(player.r < -360) {
-				player.r += 360;
-			}
-
-			if(player.forceM > 0) {
-				var speed = (player.forceM >= player.speedM) ? player.speedM : player.forceM;
-
-				player.x += speed * Math.cos(player.r * Math.PI / 180);
-				player.y += speed * Math.sin(player.r * Math.PI / 180);
-
-				player.forceM -= speed;
-			}
-			else {
-				var speed = (player.forceM <= -player.speedM) ? -player.speedM : player.forceM;
-
-				player.x += speed * Math.cos(player.r * Math.PI / 180);
-				player.y += speed * Math.sin(player.r * Math.PI / 180);
-
-				player.forceM -= speed;
-			}*/
-
 			if(player.forceR > 0) {
 				player.r += player.speedR;
 				player.forceR -= player.speedR;
@@ -159,20 +124,52 @@ module.exports = function(io) {
 			}
 
 			if(player.forceM > 0) {
-				player.x += player.speedM * Math.cos(player.r * Math.PI / 180);
-				player.y += player.speedM * Math.sin(player.r * Math.PI / 180);
+				var moveX = player.speedM * Math.cos(player.r * Math.PI / 180);
+				var moveY = player.speedM * Math.sin(player.r * Math.PI / 180);
 
-				//console.log(player.name 
-				//	+ " - x: " + player.x 
-				//	+ ", y: " + player.y
-				//	+ ", s: " + player.speedM
-				//	+ ", cs: " + self.round(player.speedM, 2) 
-				//	+ ", r: " + player.r
-				//	+ ", cr: " + Math.cos(player.r * Math.PI / 180));
+				var collided = false;
+
+				for(var i in self.players) {
+					if(self.players[i] != player) {
+						var check = self.players[i];
+
+						var dx = (player.x + moveX) - check.x;
+						var dy = (player.y + moveY) - check.y;
+
+						if(Math.sqrt(dx * dx + dy * dy) <= player.radius + check.radius) {
+							collided = true;
+						}
+					}
+				}
+
+				if(!collided) {
+					player.x += moveX;
+					player.y += moveY;
+				}
 			}
 			else if(player.forceM < 0) {
-				player.x -= player.speedM * Math.cos(player.r * Math.PI / 180);
-				player.y -= player.speedM * Math.sin(player.r * Math.PI / 180);
+				var moveX = player.speedM * Math.cos(player.r * Math.PI / 180);
+				var moveY = player.speedM * Math.sin(player.r * Math.PI / 180);
+
+				var collided = false;
+
+				for(var i in self.players) {
+					if(self.players[i] != player) {
+						var check = self.players[i];
+
+						var dx = (player.x - moveX) - check.x;
+						var dy = (player.y - moveY) - check.y;
+
+						if(Math.sqrt(dx * dx + dy * dy) <= player.radius + check.radius) {
+							collided = true;
+						}
+					}
+				}
+
+				if(!collided) {
+					player.x -= moveX;
+					player.y -= moveY;
+				}
 			}
 		}
 

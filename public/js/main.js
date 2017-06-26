@@ -91,13 +91,15 @@ function update() {
 			camera.x = players[n].x;
 			camera.y = players[n].y;
 		}
-		else {
-			console.log("x: " + players[n].x + ", y: " + players[n].y);
-		}
 
 		ctx.translate(camera.calcX(players[n].x), camera.calcY(players[n].y));
 		ctx.rotate(players[n].r * Math.PI / 180);
 		ctx.fillRect(-100 / 2, -100 / 2, 100, 100);
+
+		ctx.strokeStyle = "#0000FF";
+		ctx.beginPath();
+		ctx.arc(0, 0, 50, 0, 2 * Math.PI);
+		ctx.stroke();
 
 		ctx.restore();
 	}

@@ -28,11 +28,13 @@ module.exports = {
 		self.speedM = 0;
 		self.speedR = 0;
 
+		self.radius = 50;
+
 		self.max = 100;
 
-
 		self.generateLocation = function() {
-
+			self.x = Math.random() * 500;
+			self.y = Math.random() * 500;
 		}
 
 		self.updatePlayers = function(players) {
