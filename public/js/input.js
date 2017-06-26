@@ -1,8 +1,8 @@
-var input = function(callback) {
+var input_ = function(callback) {
 	document.addEventListener('keydown', function(event) {
-		callback(event.charCode, true);
+		callback(event.keyCode, true);
 	});
 	document.addEventListener('keyup', function(event) {
-		callback(event.charCode, false);
+		callback(event.keyCode, false);
 	});
 }

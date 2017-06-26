@@ -5,8 +5,15 @@ module.exports = function(io) {
 
 	var self = {}
 	self.players = [];
-	self.resistanceR = 3;
-	self.resistanceP = 3;
+
+	self.maxR = 2.5;
+	self.maxM = 2;
+	self.minR = 0;
+	self.minM = 0;
+	self.accM = 0.04;
+	self.decM = 0.02;
+	self.accR = 0.1;
+	self.decR = 0.2;
 
 	self.getPlayer = function(socket) {
 		for(var n in self.players) {
@@ -14,6 +21,10 @@ module.exports = function(io) {
 				return self.players[n];
 			}
 		}
+	}
+
+	self.round = function(value, decimals) {
+		return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 	}
 
 	self.update = function() {
@@ -25,48 +36,143 @@ module.exports = function(io) {
 		for(var n in self.players) {
 			var player = self.players[n];
 
-			if(player.isHold("w")) {
-				player.addForce(0, 5, 0);
+			var moved = false;
+			var rotated = false;
+
+			if(player.isHold(87)) {
+				player.addForce(10, 0);
+				player.speedM += self.accM;
+
+				if(player.speedM >= (self.maxM - 0.2)) {
+					player.speedM = self.maxM;
+				}
+
+				moved = true;
 			}
-			if(player.isHold("s")) {
-				player.addForce(0, -5, 0);
+			
+			if(player.isHold(83)) {
+				player.addForce(-10, 0);
+				player.speedM += self.accM;
+
+				if(player.speedM >= (self.maxM - 0.2)) {
+					player.speedM = self.maxM;
+				}
+
+				moved = true;
 			}
-			if(player.isHold("a")) {
-				player.addForce(0, 0, -5);
+
+			if(!moved) {
+				if(player.speedM <= (self.minM + 0.2)) {
+					player.speedM = self.minM;
+					player.forceM = self.minM;
+				}
+				else {
+					player.speedM -= self.decM;
+				}
+
+				//if(player.speedM > 0) console.log(player.name + ": " + player.speedM);
 			}
-			if(player.isHold("d")) {
-				player.addForce(0, 5, 5);
+
+			if(player.isHold(65)) {
+				player.addForce(0, -10);
+				player.speedR += self.accR;
+
+				if(player.speedR >= (self.maxR - 0.4)) {
+					player.speedR = self.maxR;
+				}
+
+				rotated = true;
 			}
+			
+			if(player.isHold(68)) {
+				player.addForce(0, 10);
+				player.speedR += self.accR;
+
+				if(player.speedR >= (self.maxR - 0.4)) {
+					player.speedR = self.maxR;
+				}
+
+				rotated = true;
+			}
+
+			if(!rotated) {
+				player.speedR -= self.decR;
+
+				if(player.speedR <= (self.minR + 0.4)) {
+					player.speedR = self.minR;
+					player.forceR = self.minR;
+				}
+			}
+
 		}
 
 		for(var n in self.players) {
 			var player = self.players[n];
 
-			if(player.forceX > 0) {
-				player.x += (player.forceX <= self.resistanceP) ? player.forceX : player.forceX - self.resistanceP;
-				player.forceX = (player.forceX <= self.resistanceP) ? 0 : player.forceX - self.resistanceP;
+			/*if(player.forceR > 0) {
+				player.r += (player.forceR <= player.speedR) ? player.forceR : player.speedR;
+				player.forceR = (player.forceR <= player.speedR) ? 0 : player.forceR - player.speedR;
 			}
 			else {
-				player.x -= (player.forceX >= -self.resistanceP) ? player.forceX : player.forceX - self.resistanceP;
-				player.forceX = (player.forceX >= -self.resistanceP) ? 0 : player.forceX + self.resistanceP;
+				player.r += (player.forceR >= -player.speedR) ? player.forceR : -player.speedR;
+				player.forceR = (player.forceR >= -player.speedR) ? 0 : player.forceR + player.speedR;
 			}
 
-			if(player.forceY > 0) {
-				player.y += (player.forceX <= self.resistanceP) ? player.forceX : player.forceX - self.resistanceP;
-				player.forceX = (player.forceX <= self.resistanceP) ? 0 : player.forceX - self.resistanceP;
+			if(player.r > 360) {
+				player.r -= 360;
+			} 
+			else if(player.r < -360) {
+				player.r += 360;
+			}
+
+			if(player.forceM > 0) {
+				var speed = (player.forceM >= player.speedM) ? player.speedM : player.forceM;
+
+				player.x += speed * Math.cos(player.r * Math.PI / 180);
+				player.y += speed * Math.sin(player.r * Math.PI / 180);
+
+				player.forceM -= speed;
 			}
 			else {
-				player.y -= (player.forceX >= -self.resistanceP) ? player.forceX : player.forceX - self.resistanceP;
-				player.forceX = (player.forceX >= -self.resistanceP) ? 0 : player.forceX + self.resistanceP;
-			}
+				var speed = (player.forceM <= -player.speedM) ? -player.speedM : player.forceM;
+
+				player.x += speed * Math.cos(player.r * Math.PI / 180);
+				player.y += speed * Math.sin(player.r * Math.PI / 180);
+
+				player.forceM -= speed;
+			}*/
 
 			if(player.forceR > 0) {
-				player.r += (player.forceY <= self.resistanceR) ? player.forceY : player.forceY - self.resistanceP;
-				player.forceY = (player.forceY <= self.resistanceR) ? 0 : player.forceY - self.resistanceP;
+				player.r += player.speedR;
+				player.forceR -= player.speedR;
 			}
 			else {
-				player.r -= (player.forceR >= -self.resistanceR) ? player.forceR : player.forceR - self.resistanceR;
-				player.forceR = (player.forceR >= -self.resistanceR) ? 0 : player.forceR + self.resistanceR;
+				player.r -= player.speedR;
+				player.forceR += player.speedR;
+			}
+
+			if(player.r > 360) {
+				player.r -= 360;
+			} 
+			else if(player.r < -360) {
+				player.r += 360;
+			}
+
+			if(player.forceM > 0) {
+				player.x += player.speedM * Math.cos(player.r * Math.PI / 180);
+				player.y += player.speedM * Math.sin(player.r * Math.PI / 180);
+
+				//console.log(player.name 
+				//	+ " - x: " + player.x 
+				//	+ ", y: " + player.y
+				//	+ ", s: " + player.speedM
+				//	+ ", cs: " + self.round(player.speedM, 2) 
+				//	+ ", r: " + player.r
+				//	+ ", cr: " + Math.cos(player.r * Math.PI / 180));
+			}
+			else if(player.forceM < 0) {
+				player.x -= player.speedM * Math.cos(player.r * Math.PI / 180);
+				player.y -= player.speedM * Math.sin(player.r * Math.PI / 180);
 			}
 		}
 
@@ -131,7 +237,7 @@ module.exports = function(io) {
 		socket.on('input', function(button, type) {
 			var player = self.getPlayer(socket);
 
-			if(button == "w" || button == "s" || button == "a" || button == "d") {
+			if(button == 87 || button == 83 || button == 65 || button == 68) {
 				player.hold(button, type);
 			}
 		});

@@ -3,7 +3,8 @@ var ctx = canvas.getContext("2d");
 var gui = document.getElementById('gui');
 var view = new viewport(canvas);
 var gameloop = new gameloop(update);
-var input = new input(input);
+var input = new input_(onInput);
+var camera = new camera_(canvas);
 var players = {};
 var me;
 
@@ -81,13 +82,28 @@ function start() {
 gameloop.start();
 
 function update() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 	for(var n in players) {
-		ctx.fillRect(players[n].x, players[n].x, 100, 100);
+		ctx.save();
+
+		if(players[n] == me) {
+			camera.x = players[n].x;
+			camera.y = players[n].y;
+		}
+		else {
+			console.log("x: " + players[n].x + ", y: " + players[n].y);
+		}
+
+		ctx.translate(camera.calcX(players[n].x), camera.calcY(players[n].y));
+		ctx.rotate(players[n].r * Math.PI / 180);
+		ctx.fillRect(-100 / 2, -100 / 2, 100, 100);
+
+		ctx.restore();
 	}
 }
 
-function input(button, state) {
-	console.log("TEST");
+function onInput(button, state) {
 	if(server != null) {
 		server.emit("input", button, state);
 	}

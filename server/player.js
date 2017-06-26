@@ -22,9 +22,11 @@ module.exports = {
 		self.buttons = [];
 
 		// The force the player has
-		self.forceX = 0;
-		self.forceY = 0;
+		self.forceM = 0;
 		self.forceR = 0;
+
+		self.speedM = 0;
+		self.speedR = 0;
 
 		self.max = 100;
 
@@ -38,7 +40,7 @@ module.exports = {
 				var player = players[n];
 				if((player.x - self.x <= self.max || player.x - self.x >= -self.max) && 
 				   (player.y - self.y <= self.max || player.y - self.y >= -self.max)) {
-					socket.emit("move", player.name, player.x, player.y, player.r);
+					socket.emit("move", player.name, player.x, player.y,player.r);
 				}
 			}
 		}
@@ -52,22 +54,18 @@ module.exports = {
 		}
 
 		self.isHold = function(button) {
-			return button[button];
+			return self.buttons[button];
 		}
 
-		self.addForce = function(forceX, forceY, forceR) {
-			self.forceX += forceX;
-			self.forceY += forceY;
+		self.addForce = function(forceM, forceR) {
+			self.forceM += forceM;
 			self.forceR += forceR;
 
-			if(self.forceX > 10) self.forceX = 10;
-			if(self.forceX < -10) self.forceX = -10;
+			if(self.forceM > 50) self.forceM = 50;
+			if(self.forceM < -50) self.forceM = -50;
 
-			if(self.forceY > 10) self.forceY = 10;
-			if(self.forceY < -10) self.forceY = -10;
-
-			if(self.forceR > 10) self.forceR = 10;
-			if(self.forceR < -10) self.forceR = -10;
+			if(self.forceR > 20) self.forceR = 20;
+			if(self.forceR < -20) self.forceR = -20;
 		}
 
 		self.removeForce = function(forceX, forceY, forceR) {
