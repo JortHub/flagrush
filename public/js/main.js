@@ -23,12 +23,17 @@ main.on("server" , function(arg) {
 });
 
 main.on("disconnect", function() {
+	main.disconnect();
 	main.close();
 });
 
 window.onunload = function(){
+	main.disconnect();
 	main.close();
-	if(server != null) server.close();
+	if(server != null) {
+		server.disconnect();
+		server.close();
+	}
 };
 
 function start() {
@@ -88,11 +93,17 @@ function update() {
 		ctx.save();
 
 		if(players[n] == me) {
-			camera.x = players[n].x;
-			camera.y = players[n].y;
+			camera.setX(players[n].x);
+			camera.setY(players[n].y);
+			camera.update();
+
+			ctx.translate(camera.middleX(), camera.middleY());
+		}
+		else {
+			ctx.translate(camera.calcX(players[n].x), camera.calcY(players[n].y));
 		}
 
-		ctx.translate(camera.calcX(players[n].x), camera.calcY(players[n].y));
+		
 		ctx.rotate(players[n].r * Math.PI / 180);
 		ctx.fillRect(-100 / 2, -100 / 2, 100, 100);
 

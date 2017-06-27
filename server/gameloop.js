@@ -4,7 +4,7 @@ module.exports = {
 		var self = {};
 		
 		self.running = true;
-		self.tickLengthMs = 1000 / 60;
+		self.tickLengthMs = 1000 / 20;
 
 		self.loop = function(delta) {
 			if(!self.running) {

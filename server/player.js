@@ -42,7 +42,7 @@ module.exports = {
 				var player = players[n];
 				if((player.x - self.x <= self.max || player.x - self.x >= -self.max) && 
 				   (player.y - self.y <= self.max || player.y - self.y >= -self.max)) {
-					socket.emit("move", player.name, player.x, player.y,player.r);
+					socket.emit("move", player.name, player.x, player.y, player.r);
 				}
 			}
 		}
@@ -66,8 +66,8 @@ module.exports = {
 			if(self.forceM > 50) self.forceM = 50;
 			if(self.forceM < -50) self.forceM = -50;
 
-			if(self.forceR > 20) self.forceR = 20;
-			if(self.forceR < -20) self.forceR = -20;
+			if(self.forceR > 30) self.forceR = 30;
+			if(self.forceR < -30) self.forceR = -30;
 		}
 
 		self.removeForce = function(forceX, forceY, forceR) {

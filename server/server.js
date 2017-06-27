@@ -6,14 +6,14 @@ module.exports = function(io) {
 	var self = {}
 	self.players = [];
 
-	self.maxR = 2.5;
-	self.maxM = 2;
+	self.maxR = 6;
+	self.maxM = 6;
 	self.minR = 0;
 	self.minM = 0;
-	self.accM = 0.04;
-	self.decM = 0.02;
-	self.accR = 0.1;
-	self.decR = 0.2;
+	self.accM = 0.3;
+	self.decM = 0.15;
+	self.accR = 0.3;
+	self.decR = 0.6;
 
 	self.getPlayer = function(socket) {
 		for(var n in self.players) {
@@ -94,11 +94,12 @@ module.exports = function(io) {
 			}
 
 			if(!rotated) {
-				player.speedR -= self.decR;
-
 				if(player.speedR <= (self.minR + 0.4)) {
 					player.speedR = self.minR;
 					player.forceR = self.minR;
+				}
+				else {
+					player.speedR -= self.decR;
 				}
 			}
 
@@ -109,11 +110,9 @@ module.exports = function(io) {
 
 			if(player.forceR > 0) {
 				player.r += player.speedR;
-				player.forceR -= player.speedR;
 			}
-			else {
+			else if(player.forceR < 0) {
 				player.r -= player.speedR;
-				player.forceR += player.speedR;
 			}
 
 			if(player.r > 360) {
