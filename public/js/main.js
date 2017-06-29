@@ -4,7 +4,7 @@ var gui = document.getElementById('gui');
 var view = new viewport(canvas);
 var gameloop = new gameloop(update);
 var input = new input_(onInput);
-var camera = new camera_(canvas);
+var camera = new camera_(canvas, view);
 var players = {};
 var me;
 
@@ -88,6 +88,8 @@ gameloop.start();
 
 function update() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillStyle = "#000019";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 	for(var n in players) {
 		ctx.save();
@@ -103,13 +105,13 @@ function update() {
 			ctx.translate(camera.calcX(players[n].x), camera.calcY(players[n].y));
 		}
 
-		
 		ctx.rotate(players[n].r * Math.PI / 180);
-		ctx.fillRect(-100 / 2, -100 / 2, 100, 100);
+		ctx.fillStyle = "#FFFFFF";
+		ctx.fillRect(camera.calc(-100 / 2), camera.calc(-100 / 2), camera.calc(100), camera.calc(100));
 
-		ctx.strokeStyle = "#0000FF";
+		ctx.strokeStyle = "#00ad02";
 		ctx.beginPath();
-		ctx.arc(0, 0, 50, 0, 2 * Math.PI);
+		ctx.arc(0, 0, camera.calc(50), 0, 2 * Math.PI);
 		ctx.stroke();
 
 		ctx.restore();
@@ -122,23 +124,40 @@ function onInput(button, state) {
 	}
 }
 
+fill(document.getElementById("health"));
+fill(document.getElementById("boost"));
+fillHeat(document.getElementById("heat"));
 
-/*var x1 = 0;
-var y1 = 0;
-var r1 = 20;
+function fill(items) {
+	for(var i = 0; i < 15; i++) {
+		var el = document.createElement('div');
+		el.style.borderColor = items.getAttribute("color");
+		el.style.background = items.getAttribute("color");
 
-var x2 = 30;
-var y2 = 0;
-var r2 = 20;
+		if(i < 10) {
+			el.className = "item active";
+		}
+		else {
+			el.className = "item inactive";
+		}
 
-// TEST3 //
-var s2 = window.performance.now();
-
-for(var z = 0; z < 100; z++) {
-	var c = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-	var collided = c < (r1 + r2);
+		items.appendChild(el);
+	}
 }
 
-var e2 = window.performance.now();
+function fillHeat(items) {
+	for(var i = 0; i < 15; i++) {
+		var el = document.createElement('div');
+		el.style.borderColor = "rgb(255, " + (255 - ((255 / 15) * i)) + ", 0)";
+		el.style.background = "rgb(255, " + (255 - ((255 / 15) * i)) + ", 0)";
 
-console.log("TEST3 = Speed: " + (e2 - s2) + " ms");*/
+		if(i < 0) {
+			el.className = "item active";
+		}
+		else {
+			el.className = "item inactive";
+		}
+
+		items.appendChild(el);
+	}
+}

@@ -1,4 +1,4 @@
-var camera_ = function(canvas) {
+var camera_ = function(canvas, viewport) {
 	var self = {};
 
 	self.x = 0;
@@ -9,6 +9,7 @@ var camera_ = function(canvas) {
 	self.oldY = 0;
 	self.difX = 0;
 	self.difY = 0;
+	self.viewport = viewport;
 
 	self.setX = function(x) {
 		self.oldX = self.x;
@@ -26,11 +27,15 @@ var camera_ = function(canvas) {
 	}
 
 	self.calcX = function(x) {
-		return x + (canvas.width / 2) - self.x;
+		return (x* viewport.scale + (canvas.width / 2) - self.x* viewport.scale);
 	}
 
 	self.calcY = function(y) {
-		return y + (canvas.height / 2) - self.y;
+		return (y* viewport.scale + (canvas.height / 2) - self.y* viewport.scale);
+	}
+
+	self.calc = function(n) {
+		return n * viewport.scale;
 	}
 
 	self.middleX = function() {

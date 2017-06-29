@@ -14,6 +14,7 @@ module.exports = function(io) {
 	self.decM = 0.15;
 	self.accR = 0.3;
 	self.decR = 0.6;
+	self.mapSize = 1000;
 
 	self.getPlayer = function(socket) {
 		for(var n in self.players) {
@@ -39,7 +40,7 @@ module.exports = function(io) {
 			var moved = false;
 			var rotated = false;
 
-			if(player.isHold(87)) {
+			if(player.isHold(87) && !player.knockback) {
 				player.addForce(10, 0);
 				player.speedM += self.accM;
 
@@ -50,7 +51,7 @@ module.exports = function(io) {
 				moved = true;
 			}
 			
-			if(player.isHold(83)) {
+			if(player.isHold(83) && !player.knockback) {
 				player.addForce(-10, 0);
 				player.speedM += self.accM;
 
@@ -122,54 +123,79 @@ module.exports = function(io) {
 				player.r += 360;
 			}
 
-			if(player.forceM > 0) {
-				var moveX = player.speedM * Math.cos(player.r * Math.PI / 180);
-				var moveY = player.speedM * Math.sin(player.r * Math.PI / 180);
+			var moveX = 0;
+			var moveY = 0;
 
-				var collided = false;
+			if(player.knockback) {
+				moveX = player.speedM * Math.cos(player.knockbackR);
+				moveY = player.speedM * Math.sin(player.knockbackR);
 
-				for(var i in self.players) {
-					if(self.players[i] != player) {
-						var check = self.players[i];
+				player.knockbackStep--;
 
-						var dx = (player.x + moveX) - check.x;
-						var dy = (player.y + moveY) - check.y;
-
-						if(Math.sqrt(dx * dx + dy * dy) <= player.radius + check.radius) {
-							collided = true;
-						}
-					}
-				}
-
-				if(!collided) {
-					player.x += moveX;
-					player.y += moveY;
+				if(player.knockbackStep == 0) {
+					player.knockback = false;
 				}
 			}
-			else if(player.forceM < 0) {
-				var moveX = player.speedM * Math.cos(player.r * Math.PI / 180);
-				var moveY = player.speedM * Math.sin(player.r * Math.PI / 180);
-
-				var collided = false;
-
-				for(var i in self.players) {
-					if(self.players[i] != player) {
-						var check = self.players[i];
-
-						var dx = (player.x - moveX) - check.x;
-						var dy = (player.y - moveY) - check.y;
-
-						if(Math.sqrt(dx * dx + dy * dy) <= player.radius + check.radius) {
-							collided = true;
-						}
-					}
+			else {
+				if(player.forceM > 0) {
+					moveX = player.speedM * Math.cos(player.r * Math.PI / 180);
+					moveY = player.speedM * Math.sin(player.r * Math.PI / 180);
 				}
-
-				if(!collided) {
-					player.x -= moveX;
-					player.y -= moveY;
+				else if(player.forceM < 0) {
+					moveX = -player.speedM * Math.cos(player.r * Math.PI / 180);
+					moveY = -player.speedM * Math.sin(player.r * Math.PI / 180);
 				}
 			}
+
+			var collided = false;
+
+			for(var i in self.players) {
+				if(self.players[i] != player) {
+					var check = self.players[i];
+
+					var dx = (player.x + moveX) - check.x;
+					var dy = (player.y + moveY) - check.y;
+
+					if(Math.sqrt(dx * dx + dy * dy) <= player.radius + check.radius) {
+						moveX = 0;
+						moveY = 0;
+						check.knockback = true;
+						check.speedM = player.speedM;
+						check.knockbackStep = 20;
+						check.knockbackR = Math.atan2(check.y - player.y, check.x - player.x);
+						player.forceM = 0;
+					}
+				}
+			}
+
+			var newX = player.x + moveX;
+			var newY = player.y + moveY;
+
+			if(newX < player.radius || newX > (player.radius + self.mapSize) ||
+			   newY < player.radius || newY > (player.radius + self.mapSize)) {
+				moveX = 0;
+				moveY = 0;
+				player.speedM = 3;
+
+				player.knockback = true;
+				player.knockbackStep = 20;
+
+				if(newX < player.radius) {
+					player.knockbackR = 0;
+				}
+				else if(newX > (player.radius + self.mapSize)) {
+					player.knockbackR = 180;
+				}
+				else if(newY < player.radius) {
+					player.knockbackR = 90;
+				}
+				else if(newY > (player.radius + self.mapSize)) {
+					player.knockbackR = 270;
+				}
+			}
+
+			player.x += moveX;
+			player.y += moveY;
 		}
 
 		// Update the players for every player

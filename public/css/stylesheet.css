@@ -1,3 +1,11 @@
+@font-face {
+	font-family: 'm12';
+    src: url('../fonts/m12.ttf');
+    font-style: normal;
+    font-weight: normal;
+}
+
+
 body {
 	margin: 0 !important;
 	overflow: hidden;
@@ -10,4 +18,116 @@ canvas {
 	image-rendering: -o-crisp-edges;
 	image-rendering: pixelated;
 	-ms-interpolation-mode: nearest-neighbor;
+}
+
+#gui {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 2;
+}
+
+#gui-text {
+	width: 50%;
+	position: relative;
+	top: 25px;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 1000px;
+
+	text-align: center;
+	color: white;
+	letter-spacing: 1px;
+}
+
+#gui-text div.title {
+	font-family: 'm12';
+	font-size: 36px;
+}
+
+#gui-text div.broadcast {
+	margin-top: 10px;
+	font-family: 'm12';
+	font-size: 18px;
+	font-style: italic;
+}
+
+#gui-stats {
+	left: 25px;
+	bottom: 25px;
+	position: absolute;
+}
+
+.gui-stats-row {
+	margin-bottom: 5px;
+	height: 24px;
+}
+
+.gui-stats-row:last-child {
+	margin-bottom: 0px;
+}
+
+.gui-stats-row div.title {
+	font-family: 'm12';
+	font-size: 24px;
+	color: white;
+	letter-spacing: 1px;
+	width: 180px;
+	float: left;
+}
+
+.gui-stats-row div.items {
+	float: left;	
+}
+
+.gui-stats-row div.items div.item {
+	width: 14px;
+	height: 22px;
+	
+	margin-right: 2px;
+	float: left;
+	border: 1px solid white;
+}
+
+.gui-stats-row div.items div.item:last-child {
+	margin-right: 0px;
+}
+
+.item.active {
+	background: white;
+}
+
+.item.inactive {
+	background: rgba(0, 0, 0, 0) !important;
+}
+
+#gui-map {
+	right: 25px;
+	bottom: 25px;
+	position: absolute;
+}
+
+#gui-info {
+	font-family: 'm12';
+	font-size: 10px;
+	color: white;
+	letter-spacing: 1px;
+	height: 10px;
+	margin-bottom: 3px;
+}
+
+#gui-info div.left {
+	float: left;
+}
+
+#gui-info div.right {
+	float: right;
+}
+
+#gui-minimap {
+	width: 200px;
+	height: 200px;
+	border: 2px solid white;
 }

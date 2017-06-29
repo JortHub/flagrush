@@ -7,7 +7,37 @@
 	</head>
 	<body>
 		<canvas id="cvs"></canvas>
-		<div id="gui"></div>
+		<div id="gui">
+			<div id="gui-text">
+				<div class="title">Capture the flag</div>
+				<div class="broadcast">Server is restarting in 30 sec</div>
+			</div>
+
+			<div id="gui-stats">
+				<div class="gui-stats-row">
+					<div class="title">Boost</div>
+					<div class="items" id="boost" color="white"></div>
+				</div>
+				<div class="gui-stats-row">
+					<div class="title">Health</div>
+					<div class="items" id="health" color="#00FF21"></div>
+				</div>
+				<div class="gui-stats-row">
+					<div class="title">Heat</div>
+					<div class="items" id="heat"></div>
+				</div>
+			</div>
+
+			<div id="gui-map">
+				<div id="gui-info">
+					<div class="left">44 ms</div>
+					<div class="right">Europe</div>
+				</div>
+				<div id="gui-minimap">
+
+				</div>
+			</div>
+		</div>
 
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="js/scaling.js"></script>

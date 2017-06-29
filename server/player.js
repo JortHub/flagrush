@@ -32,6 +32,10 @@ module.exports = {
 
 		self.max = 100;
 
+		self.knockback = false;
+		self.knockbackR = 0;
+		self.knockbackStep = 0;
+
 		self.generateLocation = function() {
 			self.x = Math.random() * 500;
 			self.y = Math.random() * 500;
