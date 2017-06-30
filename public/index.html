@@ -7,34 +7,158 @@
 	</head>
 	<body>
 		<canvas id="cvs"></canvas>
-		<div id="gui">
-			<div id="gui-text">
+		<div id="game">
+			<div id="game-text">
 				<div class="title">Capture the flag</div>
 				<div class="broadcast">Server is restarting in 30 sec</div>
 			</div>
 
-			<div id="gui-stats">
-				<div class="gui-stats-row">
+			<div id="game-stats">
+				<div class="main-title">Stats</div>
+				<div class="game-stats-row">
 					<div class="title">Boost</div>
 					<div class="items" id="boost" color="white"></div>
 				</div>
-				<div class="gui-stats-row">
+				<div class="game-stats-row">
 					<div class="title">Health</div>
 					<div class="items" id="health" color="#00FF21"></div>
 				</div>
-				<div class="gui-stats-row">
+				<div class="game-stats-row">
 					<div class="title">Heat</div>
 					<div class="items" id="heat"></div>
 				</div>
 			</div>
 
-			<div id="gui-map">
-				<div id="gui-info">
-					<div class="left">44 ms</div>
-					<div class="right">Europe</div>
-				</div>
-				<div id="gui-minimap">
+			<div id="levelup"></div>
 
+			<div id="game-upgrades">
+				<div class="main-title">Upgrades</div>
+				<div class="game-upgrades-row">
+					<div class="title">Speed</div>
+					<div class="items" id="speed"></div>
+					<div class="upgrade active" id="speed-button"></div>
+				</div>
+				<div class="game-upgrades-row">
+					<div class="title">Regen.</div>
+					<div class="items" id="regen"></div>
+					<div class="upgrade active" id="regen-button"></div>
+				</div>
+				<div class="game-upgrades-row">
+					<div class="title">Damage</div>
+					<div class="items" id="damage"></div>
+					<div class="upgrade inactive" id="damage-button"></div>
+				</div>
+			</div>
+
+			<div id="game-map">
+				<div id="game-buttons">
+					<div id="minimap-button" class="game-button active">
+						<img src="gfx/minimap_icon.png"></img>
+						<span class="tooltip">Minimap</span>
+					</div>
+					<div id="leaderboard-button" class="game-button">
+						<img src="gfx/leaderboard_icon.png"></img>
+						<span class="tooltip">Leaderboard</span>
+					</div>
+					<div id="settings-button" class="game-button">
+						<img src="gfx/settings_icon.png"></img>
+						<span class="tooltip">Settings</span>
+					</div>
+					<div id="exit-button" class="game-button">
+						<img src="gfx/exit_icon.png"></img>
+						<span class="tooltip">Exit</span>
+					</div>
+				</div>
+				<div id="game-container">
+					<div id="game-info">
+						<div class="left">44 ms</div>
+						<div class="right">Europe</div>
+					</div>
+					<div id="game-square">
+						<div id="square-minimap" class="inactive">
+							<canvas></canvas>
+						</div>
+						<div id="square-leaderboard" class="inactive">
+							<div id="leaderboard-rows">
+								<div class="row">
+									<div class="rank">1</div>
+									<div class="name">JortvD</div>
+									<div class="amount">28</div>
+								</div>
+								<div class="row">
+									<div class="rank">2</div>
+									<div class="name">Fynn</div>
+									<div class="amount">21</div>
+								</div>
+								<div class="row">
+									<div class="rank">3</div>
+									<div class="name">Koen</div>
+									<div class="amount">16</div>
+								</div>
+								<div class="row">
+									<div class="rank">4</div>
+									<div class="name">Tobias</div>
+									<div class="amount">12</div>
+								</div>
+								<div class="row">
+									<div class="rank">5</div>
+									<div class="name">Milo</div>
+									<div class="amount">9</div>
+								</div>
+								<div class="row">
+									<div class="rank">6</div>
+									<div class="name">JortvD</div>
+									<div class="amount">7</div>
+								</div>
+								<div class="row">
+									<div class="rank">7</div>
+									<div class="name">Fynn</div>
+									<div class="amount">3</div>
+								</div>
+								<div class="row">
+									<div class="rank">8</div>
+									<div class="name">Koen</div>
+									<div class="amount">1</div>
+								</div>
+							</div>
+							<div id="leaderboard-you">
+								<div id="you-rank">1 of 18</div>
+								<div id="you-amount">with 28 kills</div>
+							</div>
+						</div>
+						<div id="square-settings" class="active">
+							<div class="settings-section">
+								<div class="setting">
+									<div class="title">Audio</div>
+									<div class="content"><input type="range" id="audio" value="50"></div>
+								</div>
+								<div class="setting">
+									<div class="title">Music</div>
+									<div class="content"><input type="range" id="music" value="50"></div>
+								</div>
+							</div>
+							<div class="settings-section">
+								<div class="setting">
+									<div class="title">Quality</div>
+									<div class="content"></div>
+								</div>
+								<div class="setting">
+									<div class="title">Render</div>
+									<div class="content"></div>
+								</div>
+								<div class="setting">
+									<div class="title">FPS</div>
+									<div class="content"></div>
+								</div>
+							</div>
+							<div class="settings-section">
+								<div class="setting">
+									<div class="title">Prt sc</div>
+									<div class="content"></div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

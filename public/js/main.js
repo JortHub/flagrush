@@ -128,6 +128,10 @@ fill(document.getElementById("health"));
 fill(document.getElementById("boost"));
 fillHeat(document.getElementById("heat"));
 
+fill(document.getElementById("speed"));
+fill(document.getElementById("regen"));
+fill(document.getElementById("damage"));
+
 function fill(items) {
 	for(var i = 0; i < 15; i++) {
 		var el = document.createElement('div');
@@ -161,3 +165,4 @@ function fillHeat(items) {
 		items.appendChild(el);
 	}
 }
+
