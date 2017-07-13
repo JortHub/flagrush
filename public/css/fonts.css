@@ -1,6 +1,6 @@
 @font-face {
 	font-family: 'm12';
-    src: url('../fonts/m12.ttf');
+    src: local('../fonts/m12.ttf');
     font-style: normal;
     font-weight: normal;
 }
