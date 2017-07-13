@@ -629,10 +629,6 @@ module.exports = function(io) {
 			}
 		});
 
-		socket.on('latency', function() {
-    		socket.emit('latency');
-  		});
-
 		// A player has typed some thing or done some type of input
 		socket.on('input', function(button, type) {
 			var player = self.getPlayer(socket);
