@@ -1,7 +1,11 @@
 var express = require('express');
+var compression = require('compression');
 var app = express();
 var server = app.listen(8888);
 var io = require('socket.io').listen(server);
+var crypto = require('crypto');
+
+app.use(compression());
 
 console.log("Main server started on the port 8888");
 
@@ -28,11 +32,18 @@ app.get('*', function(req, res){
 
 // Connection
 io.on('connection', function(socket){
-  socket.on("broadcast", function() {
-  	
+  socket.on("broadcast", function(code, message) {
+  	code = crypto.createHash('md5').update(code).digest('hex');
+
+  	if(code == "4eaf2ff75c42c06f31bbede5591d7f46") {
+  		io.emit("broadcast", message);
+  		console.log("Broadcasted " + message);
+  	}
   });
 
-  socket.emit("server", chooseServer());
+  socket.on("server", function() {
+  	socket.emit("server", chooseServer());
+  });
 });
 
 // Create a server JUST FOR NOW

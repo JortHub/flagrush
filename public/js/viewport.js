@@ -1,4 +1,4 @@
-var viewport = function(canvas) {
+var viewport_ = function(canvas, xScale) {
 	var self = {};
 
 	self.minScale = 1;
@@ -13,18 +13,18 @@ var viewport = function(canvas) {
 		
 		if(aspect > 1) { 
 			if(canvas.width > (self.minScale * self.maxViewDistance)) {
-				self.scale = (canvas.width / self.maxViewDistance);
+				self.scale = (canvas.width / self.maxViewDistance) * xScale;
 			}
 			else {
-				self.scale = self.minScale;
+				self.scale = self.minScale * xScale;
 			}
 		}
 		else {
 			if(canvas.height > (self.minScale * self.maxViewDistance)) {
-				self.scale = (canvas.height / self.maxViewDistance);
+				self.scale = (canvas.height / self.maxViewDistance) * xScale;
 			}
 			else {
-				self.scale = self.minScale;
+				self.scale = self.minScale * xScale;
 			}
 		}
 	}

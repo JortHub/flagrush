@@ -1,14 +1,14 @@
-@font-face {
-	font-family: 'm12';
-    src: url('../fonts/m12.ttf');
-    font-style: normal;
-    font-weight: normal;
-}
-
-
 body {
 	margin: 0 !important;
 	overflow: hidden;
+
+	-webkit-user-select: none; /* Chrome/Safari */        
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* IE10+ */
+	
+	/* Rules below not implemented in browsers yet */
+	-o-user-select: none;
+	user-select: none;
 }
 
 canvas {
@@ -20,6 +20,225 @@ canvas {
 	-ms-interpolation-mode: nearest-neighbor;
 }
 
+#main {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 5;
+	background: #000019;
+
+	width: 100%;
+	height: 100%;
+}
+
+#main .left {
+	width: 250px;
+	position: absolute;
+	left: 25px;
+	top: 25px;
+	height: calc(100% - 50px);
+}
+
+#main .right {
+	width: 250px;
+	position: absolute;
+	right: 25px;
+	top: 25px;
+	height: calc(100% - 50px);
+}
+
+#main .middle {
+	width: 400px;
+	left: calc(50% - 200px);
+	height: 100%;
+	position: absolute;
+}
+
+#main .section {
+	color: white;
+	font-family: 'm12';
+	padding: 8px;
+	border: 2px solid white;
+	margin-bottom: 10px;
+}
+
+#main .logo {
+	height: 200px;
+	width: 400px;
+	margin-top: 100px;
+}
+
+#main .logo img {
+	width: 100%;
+	height: 100%;
+}
+
+#main .menu {
+	margin-top: 50px;
+}
+
+#main .menu input {
+	width: calc(100% - 34px);
+	height: 45px;
+	margin-bottom: 10px;
+	border: 2px solid white;
+	background: transparent;
+	color:  white;
+	font-family: 'm12';
+	font-size: 20px;
+	letter-spacing: 1px;
+	padding: 1px 15px;
+}
+
+#main .menu button {
+	width: 100%;
+	height: 51px;
+	background: transparent;
+	color: white;
+	font-family: 'm12';
+	font-size: 20px;
+	letter-spacing: 1px;
+	border: 2px solid white;
+
+	transition: all 0.8s;
+}
+
+#main .menu button:hover {
+	background: white;
+	color:  #000019;
+}
+
+#main .ad {
+	height: 280px;
+	width: 280px;
+	border: 2px solid white;
+	padding: 8px;
+	margin: 50px
+}
+
+#main .section .title {
+	text-align: center;
+	letter-spacing: 1px;
+	margin-top: 4px;
+}
+
+#main .section .content {
+	margin-top: 8px;
+	width: 100%;
+	font-family: 'Trebuchet MS';
+	font-size: 15px;
+	font-weight: 700;
+	line-height: 16px;
+}
+
+#main .section .content a {
+	text-decoration: none;
+	color: #116cff;
+}
+
+#main .section .content a:hover {
+	text-decoration: underline;
+}
+
+#main .section .content h1 {
+	font-size: 18px;
+	width: 100%;
+	font-weight: 900;
+	margin: 12px 0 0 0;
+}
+
+#main .section .content ul {
+	padding-left: 20px;
+	margin: 5px 0;
+	list-style-type: square;
+}
+
+#main .section .content .row {
+	width: 230px;
+	padding-bottom: 7px;
+}
+
+#main .section .content .row:last-child {
+	padding-bottom: 0;
+}
+
+#main .section .content .row img {
+	float: left;
+	position: absolute;
+}
+
+#main .section .content .row div {
+	display: flex;
+    align-items: center;
+    margin-left: 58px;
+    height: 100%;
+}
+
+#main .section .content .tips li {
+	margin-bottom: 5px;
+}
+
+#main .section .content .update li {
+	font-size: 14px;
+}
+
+#main .section:last-child {
+	margin-bottom: 0;
+}
+
+@media screen and (max-height: 840px) {
+	#main .logo {
+		margin-top: 50px;
+	}
+
+	#main .menu {
+		margin-top: 25px;
+	}
+
+	#main .ad {
+		margin-top: 25px;
+	}
+}
+
+#title {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: table;
+	width: 100%;
+	height: 100%;
+	font-size: 50px;
+	font-family: 'm12';
+	letter-spacing: 1px;
+	text-align: center;
+	transition: all 1s;
+	line-height: 60px;
+	z-index: -5;
+}
+
+#title.active {
+	color: white;
+	background: black;
+}
+
+#title.inactive {
+	color: transparent;
+	background: transparent;
+}
+
+#title span {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+#title span small {
+	font-size: 30px;
+}
+
 #game {
 	position: absolute;
 	top: 0;
@@ -27,15 +246,16 @@ canvas {
 	left: 0;
 	right: 0;
 	z-index: 2;
+
+	display: none;
 }
 
 #game-text {
-	width: 80%;
-	position: relative;
+	width: 100%;
+	position: absolute;
 	top: 25px;
 	margin-left: auto;
 	margin-right: auto;
-	max-width: 1000px;
 
 	text-align: center;
 	color: white;
@@ -45,6 +265,7 @@ canvas {
 #game-text div.title {
 	font-family: 'm12';
 	font-size: 36px;
+	line-height: 45px;
 }
 
 #game-text div.broadcast {
@@ -110,6 +331,7 @@ canvas {
 	left: 25px;
 	bottom: 140px;
 	position: absolute;
+	display: none;
 }
 
 #game-upgrades .main-title {
@@ -123,20 +345,27 @@ canvas {
 
 #levelup {
 	position: absolute;
-	bottom: 227px;
-	left: 262px;
+	left: 10px;
+	top: 30px;
 	font-family: 'm12';
-	font-size: 20px;
-	margin-bottom: 5px;
+	font-size: 55px;
 	letter-spacing: 1px;
 	float: left;
-	width: 50%;
+	transition: color 1s;
+	white-space: nowrap;
 	color: rgb(0, 255, 33);
 }
 
 #levelup::before {
-	content: "Level up!";
-	
+	content: "Level up";
+}
+
+#levelup.active {
+	color: rgb(0, 255, 33);
+}
+
+#levelup.inactive {
+	color: transparent;
 }
 
 .game-upgrades-row {
@@ -181,7 +410,9 @@ canvas {
 	margin-left: 5px;
 	font-size: 26px;
 	font-weight: 900;
-	transition: font-size 0.3s;
+	transition: all 0.3s;
+	width: 20px;
+	text-align: center;
 }
 
 .game-upgrades-row .upgrade.inactive {
@@ -324,8 +555,8 @@ canvas {
 }
 
 #square-minimap canvas {
-	width: 100%;
-	height: 100%;
+	width: 200px;
+	height: 200px;
 }
 
 #square-leaderboard {
@@ -445,12 +676,53 @@ canvas {
 	background: transparent;
 }
 
-input[type=range]{
-    -webkit-appearance: none;
+.setting .content select {
+	width: 100%;
+	height: 16px;
+
+	position: relative;
+	top: -4px;
 }
 
-input[type=range]::-webkit-slider-thumb {
-	-webkit-appearance: none;
+.setting .content input[type=number] {
+	width: calc(100% - 11px);
+	height: 14px;
+
+	position: relative;
+	top: -4px;
+}
+
+.setting .content button {
+	width: 100%;
+	height: 16px;
+
+	position: relative;
+	top: -3px;
+
+	background: transparent;
+	border: 1px solid white;
+	font-size: 8px;
+	font-family: 'm12';	
+	letter-spacing: 1px;
+	color: white;
+	transition: all 0.5s;
+}
+
+.setting .content button:hover {
+	background: white;
+	color: #000019;
+}
+
+.setting .content input[type=range]{
+    -webkit-appearance: none; 
+	-moz-appearance: none;
+	appearance: none;
+}
+
+.setting .content input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none; 
+	-moz-appearance: none;
+	appearance: none;
 	border: none;
     height: 12px;
     width: 12px;
@@ -459,7 +731,7 @@ input[type=range]::-webkit-slider-thumb {
     margin-top: -5px;
 }
 
-input[type=range]::-webkit-slider-runnable-track {
+.setting .content input[type=range]::-webkit-slider-runnable-track {
     width: 300px;
     height: 2px;
     background: #7d7d7d;
@@ -467,6 +739,56 @@ input[type=range]::-webkit-slider-runnable-track {
     margin-top: -8px;
 }
 
-input[type=range]:focus {
+.setting .content input[type=range]:focus {
 	outline: none;
+}
+
+.setting .content select {
+	/*-webkit-appearance: none; 
+	-moz-appearance: none;
+	appearance: none;*/
+
+	border: 1px solid white;
+	background: transparent;
+	color: white;
+	font-size: 8px;
+	font-family: 'm12';	
+	letter-spacing: 1px;
+	padding-left: 5px;
+}
+
+.setting .content option {
+	background: #000019;
+	border: 1px solid white;
+	letter-spacing: 2px;
+	padding-top: 1px;
+	font-size: 10px;
+}
+
+.setting .content input[type=number] {
+	-webkit-appearance: none; 
+	-moz-appearance: none;
+	appearance: none;
+
+	border: 1px solid white;
+	background: transparent;
+	padding-left: 10px;
+	padding-top: 0;
+	padding-bottom: 0;
+	font-size: 8px;
+	font-family: 'm12';	
+	letter-spacing: 1px;
+	color: white;
+}
+
+.setting .content input[type=number]::-webkit-inner-spin-button {
+    cursor: pointer;
+    display:block;
+    color: #333;
+    background: white;
+    text-align:center;
+    width: 2px;
+    height: 6px;
+    padding: 4px;
+    position: relative;
 }

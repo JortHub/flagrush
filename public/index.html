@@ -3,14 +3,119 @@
 	<head>
 		<title>Flagrush</title>
 
+		<link rel="stylesheet" href="css/fonts.css">
 		<link rel="stylesheet" href="css/stylesheet.css">
+
+		<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+		<script>
+			(adsbygoogle = window.adsbygoogle || []).push({
+				google_ad_client: "ca-pub-1287060980639210",
+				enable_page_level_ads: true
+			});
+		</script>
 	</head>
 	<body>
-		<canvas id="cvs"></canvas>
+		<div id="main">
+			<div class="left">
+				<div class="section">
+					<div class="title">Links</div>
+					<div class="content">
+						Contact me at:<br />
+						<a href="mailto:contact@flagrush.io">contact@flagrush.io</a>
+						<br /><br />
+						Send your suggestions to:<br />
+						<a href="mailto:ideas@flagrush.io">ideas@flagrush.io</a>
+						<br /><br />
+						Look at my friend's game:
+						<a href="http://stabby.io">Stabby.io</a>
+						<br /><br />
+						<a href="https://iogames.space">Other .io games</a>
+					</div>
+				</div>
+				<div class="section">
+					<div class="title">Changelog</div>
+					<div class="content">
+						<h1>Update v0.0.1</h1>
+						<ul class="update">
+							<li>The very first update!</li>
+							<li>Added a universe with shiny stars</li>
+							<li>Added some flying objects with guns</li>
+							<li>Added an insane amount of UI</li>
+							<li>Added settings for the people who want high FPS</li>
+							<li>Added upgradable special abilities</li>
+							<li>Added some ads to support me</li>
+							<li>Expect more to come...</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="middle">
+				<div class="logo"><img src="gfx/logo_transparent.png"></img></div>
+				<div class="menu">
+					<input type="text" id="username" placeholder="username" autocomplete="off">
+					<button id="enter">Enter Game</button>
+				</div>
+				<div class="ad">
+					
+				</div>
+			</div>
+			<div class="right">
+				<div class="section">
+					<div class="title">Controls</div>
+					<div class="content">
+						<div class="row" style="height:50px">
+							<img src="gfx/w_button.png"></img>
+							<div>Use this to move forwards</div>
+						</div>
+						<div class="row" style="height:50px">
+							<img src="gfx/s_button.png"></img>
+							<div>Used to get some backwards thrust</div>
+						</div>
+						<div class="row" style="height:50px">
+							<img src="gfx/a_button.png"></img>
+							<div>Rotates you anticlockwise</div>
+						</div>
+						<div class="row" style="height:50px">
+							<img src="gfx/d_button.png"></img>
+							<div>Rotates you clockwise</div>
+						</div>
+						<div class="row" style="height:50px">
+							<img src="gfx/space_button.png"></img>
+							<div>Press space to use your boosters to speed up</div>
+						</div>
+						<div class="row" style="height:75px">
+							<img src="gfx/left_button.png"></img>
+							<div>Used to shoot flashy lasers</div>
+						</div>
+					</div>
+				</div>
+				<div class="section">
+					<div class="title">Tips</div>
+					<div class="content">
+						<ul class="tips">
+							<li>Killing other players gives you upgrade points.</li>
+							<li>Spend your upgrade points on the special abilities.</li>
+							<li>Use the keys 1 to 4 to quick-switch the menu items.</li>
+							<li>Collect the boost tanks to refill your boost.</li>
+							<li>Follow the ingame instructions.</li>
+							<li>Use the minimap so you don't get lost.</li>
+							<li>Don't even try to shoot your teammates...</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="title" class="inactive">
+			<span>Capture the flag</span>
+		</div>
+
 		<div id="game">
+			<canvas id="cvs" moz-opaque></canvas>
+
 			<div id="game-text">
-				<div class="title">Capture the flag</div>
-				<div class="broadcast">Server is restarting in 30 sec</div>
+				<div class="title" id="game-text-title">Capture the flag</div>
+				<div class="broadcast" id="game-text-sub"></div>
 			</div>
 
 			<div id="game-stats">
@@ -29,10 +134,9 @@
 				</div>
 			</div>
 
-			<div id="levelup"></div>
-
 			<div id="game-upgrades">
 				<div class="main-title">Upgrades</div>
+				<div id="levelup" class="active"></div>
 				<div class="game-upgrades-row">
 					<div class="title">Speed</div>
 					<div class="items" id="speed"></div>
@@ -71,12 +175,12 @@
 				</div>
 				<div id="game-container">
 					<div id="game-info">
-						<div class="left">44 ms</div>
-						<div class="right">Europe</div>
+						<div class="left" id="ping">44 ms</div>
+						<div class="right" id="loc">Europe</div>
 					</div>
 					<div id="game-square">
-						<div id="square-minimap" class="inactive">
-							<canvas></canvas>
+						<div id="square-minimap" class="active">
+							<canvas id="minimap-canvas" width="200px" height="200px"></canvas>
 						</div>
 						<div id="square-leaderboard" class="inactive">
 							<div id="leaderboard-rows">
@@ -126,8 +230,8 @@
 								<div id="you-amount">with 28 kills</div>
 							</div>
 						</div>
-						<div id="square-settings" class="active">
-							<div class="settings-section">
+						<div id="square-settings" class="inactive">
+							<!--<div class="settings-section">
 								<div class="setting">
 									<div class="title">Audio</div>
 									<div class="content"><input type="range" id="audio" value="50"></div>
@@ -136,25 +240,61 @@
 									<div class="title">Music</div>
 									<div class="content"><input type="range" id="music" value="50"></div>
 								</div>
-							</div>
+							</div>-->
 							<div class="settings-section">
 								<div class="setting">
 									<div class="title">Quality</div>
-									<div class="content"></div>
+									<div class="content">
+										<select id="quality">
+											<option value="high">High</option>
+											<option value="medium">Medium</option>
+											<option value="low">Low</option>
+										</select>
+									</div>
+								</div>
+								<div class="setting">
+									<div class="title">Image</div>
+									<div class="content">
+										<select id="image">
+											<option value="ultra">Ultra</option>
+											<option value="high">High</option>
+											<option value="medium">Medium</option>
+											<option value="low">Low</option>
+										</select>
+									</div>
 								</div>
 								<div class="setting">
 									<div class="title">Render</div>
-									<div class="content"></div>
+									<div class="content">
+										<select id="render">
+											<option value="auto">Auto</option>
+											<option value="pixel">Pixel</option>
+											<option value="crisp">Crisp</option>
+										</select>
+									</div>
 								</div>
 								<div class="setting">
-									<div class="title">FPS</div>
-									<div class="content"></div>
+									<div class="title">Smooth</div>
+									<div class="content">
+										<select id="smooth">
+											<option value="true">true</option>
+											<option value="false">false</option>
+										</select>
+									</div>
+								</div>
+								<div class="setting">
+									<div class="title">TPS</div>
+									<div class="content">
+										<input value="5" type="number" id="tps" min="1" max="30">
+									</div>
 								</div>
 							</div>
 							<div class="settings-section">
 								<div class="setting">
 									<div class="title">Prt sc</div>
-									<div class="content"></div>
+									<div class="content">
+										<button id="prtsc">click me</button>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -163,12 +303,29 @@
 			</div>
 		</div>
 
+		<script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+			ga('create', 'UA-102427394-1', 'auto');
+			ga('send', 'pageview');
+
+		</script>
+
 		<script src="/socket.io/socket.io.js"></script>
-		<script src="js/scaling.js"></script>
+		<script src="js/viewport.js"></script>
 		<script src="js/gameloop.js"></script>
+		<script src="js/statrows.js"></script>
 		<script src="js/player.js"></script>
 		<script src="js/input.js"></script>
 		<script src="js/camera.js"></script>
+		<script src="js/leaderboard.js"></script>
+		<script src="js/upgrades.js"></script>
+		<script src="js/square.js"></script>
+		<script src="js/image.js"></script>
+		<script src="js/settings.js"></script>
 		<script src="js/main.js"></script>
 	</body>
 </html>

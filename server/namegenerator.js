@@ -21,6 +21,10 @@ module.exports = function() {
 	}
 
 	self.removeNumber = function(n) {
+		if(!n.includes("Guest")) {
+			return;
+		}
+
 		n = n.replace("Guest", "");
 
 		self.users = self.users.filter(function(el) {
