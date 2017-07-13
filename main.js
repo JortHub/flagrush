@@ -1,13 +1,13 @@
 var express = require('express');
 var compression = require('compression');
 var app = express();
-var server = app.listen(8888);
+var server = app.listen(80);
 var io = require('socket.io').listen(server);
 var crypto = require('crypto');
 
 app.use(compression());
 
-console.log("Main server started on the port 8888");
+console.log("Main server started on the port 80");
 
 var servers = [
 	
