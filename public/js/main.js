@@ -400,10 +400,6 @@ function init_server() {
 		}
 	});
 
-	server.on('latency', function() {
-		document.getElementById("ping").innerHTML = ((Date.now() - startTime) / 2) + " ms";
-	});
-
 	server.on("disconnect", function() {
 		console.log("Left (" + new Date().toLocaleTimeString() + ")");
 		server.close();
@@ -893,11 +889,6 @@ function update() {
 
 function tick() {
 	leaderboard.update(players, me);
-
-	if(server != null && started) {
-		startTime = Date.now();
-		server.emit('latency');
-	}
 }
 
 function onInput(button, state) {
