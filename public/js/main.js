@@ -2,6 +2,8 @@ var canvas = document.getElementById('cvs');
 var minimap_canvas = document.getElementById('minimap-canvas');
 var ctx = canvas.getContext("2d");
 var minimap_ctx = minimap_canvas.getContext("2d");
+minimap_ctx.imageSmoothingEnabled = true;
+minimap_ctx.imageSmoothingQuality = "medium";
 
 var main = io();
 var server = null;
@@ -124,6 +126,7 @@ function generate_stars() {
 }
 
 var time_left = 0;
+var start_date = 0;
 
 function broadcast(code, message) {
 	main.emit("broadcast", code, message);
@@ -228,14 +231,15 @@ function init_server() {
 		p.shooting = false;
 	});
 
-	server.on("move", function(name, x, y, r) {
+	server.on("move", function(name, x, y, r, state) {
 		var p = getPlayer(name);
 
-		if(Math.round(p.x) != Math.round(x) || Math.round(p.y) != Math.round(y)) {
-			p.moving = true;
+		if(!state) {
+			p.moving = false;
+			return;
 		}
 		else {
-			p.moving = false;
+			p.moving = true;
 		}
 
 		if(p == me) {
@@ -336,8 +340,9 @@ function init_server() {
 	server.on("capturing", function(state, name, time) {
 		if(state) {
 			if(name == me.name) {
-				time_left = time * 6;
-				document.getElementById("game-text-title").innerHTML = "Capturing the flag<br>" + Math.round(time_left/60) + " seconds left";
+				time_left = time * 100;
+				start_date = Date.now();
+				document.getElementById("game-text-title").innerHTML = "Capturing the flag<br>" + Math.round(time_left/1000) + " seconds left";
 			}
 			else {
 				document.getElementById("game-text-title").innerHTML = "The flag is being captured";
@@ -433,7 +438,9 @@ function removePlayer(name) {
 
 var restarting = false;
 
-function restart(reason, length = 2000) {
+function restart(reason, length) {
+	length = length || 2000;
+
 	if(restarting) {
 		return;
 	}
@@ -594,8 +601,8 @@ function update() {
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 	if(document.getElementById("game-text-title").innerHTML.startsWith("Capturing the flag")) {
-		time_left--;
-		document.getElementById("game-text-title").innerHTML = "Capturing the flag<br>" + Math.round(time_left/60) + " seconds left";
+		time_left = 30000 - (Date.now() - start_date);
+		document.getElementById("game-text-title").innerHTML = "Capturing the flag<br>" + Math.round(time_left/1000) + " seconds left";
 	}
 
 	if(me != null) {
@@ -610,42 +617,42 @@ function update() {
 			if(me.team == 0) {
 				minimap_ctx.fillStyle = "#FF7F7F";
 
-				minimap_ctx.fillRect(calcMinimap(flagX), calcMinimap(flagY), calcMinimap(flagW), calcMinimap(flagH));
+				minimap_ctx.fillRect(calcMinimap(flagX) - 6, calcMinimap(flagY) - 6, calcMinimap(flagW) + 12, calcMinimap(flagH) + 12);
 				minimap_ctx.beginPath();
 				minimap_ctx.strokeStyle = "#FF0000";
 				minimap_ctx.lineWidth = "1";
-				minimap_ctx.rect(calcMinimap(flagX), calcMinimap(flagY), calcMinimap(flagW), calcMinimap(flagH));
+				minimap_ctx.rect(calcMinimap(flagX) - 6, calcMinimap(flagY) - 6, calcMinimap(flagW) + 12, calcMinimap(flagH) + 12);
 				minimap_ctx.stroke();
 
 				minimap_ctx.fillStyle = "#7F92FF";
-				minimap_ctx.fillRect(calcMinimap(szX), calcMinimap(szY), calcMinimap(szW), calcMinimap(szH));
+				minimap_ctx.fillRect(calcMinimap(szX) - 5, calcMinimap(szY) - 4, calcMinimap(szW) + 10, calcMinimap(szH) + 5);
 				minimap_ctx.beginPath();
 				minimap_ctx.strokeStyle = "#0026FF";
 				minimap_ctx.lineWidth = "1";
-				minimap_ctx.rect(calcMinimap(szX), calcMinimap(szY), calcMinimap(szW), calcMinimap(szH));
+				minimap_ctx.rect(calcMinimap(szX) - 5, calcMinimap(szY) - 4, calcMinimap(szW) + 10, calcMinimap(szH) + 5);
 				minimap_ctx.stroke();
 			}
 			else {
 				minimap_ctx.fillStyle = "#7F92FF";
-				minimap_ctx.fillRect(calcMinimap(flagX), calcMinimap(flagY), calcMinimap(flagW), calcMinimap(flagH));
+				minimap_ctx.fillRect(calcMinimap(flagX) - 6, calcMinimap(flagY) - 6, calcMinimap(flagW) + 12, calcMinimap(flagH) + 12);
 				minimap_ctx.beginPath();
 				minimap_ctx.strokeStyle = "#0026FF";
 				minimap_ctx.lineWidth = "1";
-				minimap_ctx.rect(calcMinimap(flagX), calcMinimap(flagY), calcMinimap(flagW), calcMinimap(flagH));
+				minimap_ctx.rect(calcMinimap(flagX) - 6, calcMinimap(flagY) - 6, calcMinimap(flagW) + 12, calcMinimap(flagH) + 12);
 				minimap_ctx.stroke();
 
 				minimap_ctx.fillStyle = "#FF7F7F";
-				minimap_ctx.fillRect(calcMinimap(szX), calcMinimap(szY), calcMinimap(szW), calcMinimap(szH));
+				minimap_ctx.fillRect(calcMinimap(szX) - 5, calcMinimap(szY) - 4, calcMinimap(szW) + 10, calcMinimap(szH) + 5);
 				minimap_ctx.beginPath();
 				minimap_ctx.strokeStyle = "#FF0000";
 				minimap_ctx.lineWidth = "1";
-				minimap_ctx.rect(calcMinimap(szX), calcMinimap(szY), calcMinimap(szW), calcMinimap(szH));
+				minimap_ctx.rect(calcMinimap(szX) - 5, calcMinimap(szY) - 4, calcMinimap(szW) + 10, calcMinimap(szH) + 5);
 				minimap_ctx.stroke();
 			}
 
 			if(minimapAniTime > 60) {
 				if(!flagCaptured) {
-					minimap_ctx.drawImage(flag_small.img, calcMinimap(flagX) - 4, calcMinimap(flagY) - 4, calcMinimap(flagW) + 8, calcMinimap(flagH) + 8);
+					minimap_ctx.drawImage(flag_small.img, calcMinimap(flagX) - 3, calcMinimap(flagY) - 3, calcMinimap(flagW) + 6, calcMinimap(flagH) + 6);
 				}
 			}
 
@@ -655,7 +662,7 @@ function update() {
 			}
 			
 			if(me.team == 0) {
-				minimap_ctx.drawImage(home_small.img, 91, 182, 18, 18);
+				minimap_ctx.drawImage(home_small.img, 91, 184, 18, 18);
 			}
 
 			for(var n in players) {
@@ -693,15 +700,6 @@ function update() {
 					minimap_ctx.drawImage(arrow_red.img, -6, -6, 12, 12);
 				}
 				minimap_ctx.restore();
-			}
-			
-			for(var n in fuel_tanks) {
-				minimap_ctx.save();
-				var tank = fuel_tanks[n];
-				minimap_ctx.translate(calcMinimap(tank.x), calcMinimap(tank.y));
-				minimap_ctx.drawImage(fuel_small.img, -6, -6, 12, 12);
-				minimap_ctx.restore();
-
 			}
 		}
 
@@ -868,7 +866,7 @@ function update() {
 				p.hit = false;
 			}
 
-			ctx.drawImage(spaceship_hurt.img, camera.calc(-400), camera.calc(-620), camera.calc(800), camera.calc(1000));
+			ctx.drawImage(spaceship_hurt.img, camera.calc(x), camera.calc(y), camera.calc(w), camera.calc(h));
 
 			ctx.globalAlpha = 1;
 
@@ -880,7 +878,7 @@ function update() {
 		}
 
 		if(p.moving) {
-			ctx.drawImage(spaceship_trail.img, camera.calc(-400), camera.calc(-620), camera.calc(800), camera.calc(1000));
+			ctx.drawImage(spaceship_trail.img, x, y, w, h);
 		}
 
 		ctx.restore();

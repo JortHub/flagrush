@@ -6,6 +6,7 @@ var settings_ = function() {
 	self.smooth = document.getElementById('smooth');
 	self.tps = document.getElementById('tps');
 	self.prtsc = document.getElementById('prtsc');
+	self.fullsc = document.getElementById('fullsc');
 
 	self.quality.addEventListener("change", function(e) {
 		self.set_quality(e.target.value);
@@ -29,6 +30,10 @@ var settings_ = function() {
 
 	self.prtsc.addEventListener("click", function() {
 		self.set_prtsc();
+	});
+
+	self.fullsc.addEventListener("click", function() {
+		self.set_fullsc();
 	});
 
 	self.load = function() {
@@ -137,6 +142,40 @@ var settings_ = function() {
 
 	self.set_prtsc = function() {
 		window.open(canvas.toDataURL());
+	}
+
+	self.set_fullsc = function() {
+		var isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
+        (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
+        (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
+        (document.msFullscreenElement && document.msFullscreenElement !== null);
+
+	    var docElm = document.documentElement;
+	    if (!isInFullScreen) {
+	        if (docElm.requestFullscreen) {
+	            docElm.requestFullscreen();
+	        } else if (docElm.mozRequestFullScreen) {
+	            docElm.mozRequestFullScreen();
+	        } else if (docElm.webkitRequestFullScreen) {
+	            docElm.webkitRequestFullScreen();
+	        } else if (docElm.msRequestFullscreen) {
+	            docElm.msRequestFullscreen();
+	        }
+
+	        self.fullsc.innerHTML = "close";
+	    } else {
+	        if (document.exitFullscreen) {
+	            document.exitFullscreen();
+	        } else if (document.webkitExitFullscreen) {
+	            document.webkitExitFullscreen();
+	        } else if (document.mozCancelFullScreen) {
+	            document.mozCancelFullScreen();
+	        } else if (document.msExitFullscreen) {
+	            document.msExitFullscreen();
+	        }
+
+	        self.fullsc.innerHTML = "open";
+	    }
 	}
 
 	return self;

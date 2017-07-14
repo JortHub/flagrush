@@ -56,6 +56,10 @@ var player = function() {
 	}
 
 	self.update = function() {
+		if(!self.moving) {
+			return;
+		}
+
 		self.x += self.difX / self.positionInterval;
 		self.y += self.difY / self.positionInterval;
 

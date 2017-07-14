@@ -5,7 +5,9 @@ var statrow = function(element) {
 	self.items = [];
 	self.max = 14; 
 
-	self.fill = function(heat = false) {
+	self.fill = function(heat) {
+		heat = heat || false;
+
 		self.element.innerHTML = "";
 
 		for(var i = 0; i < self.max; i++) {

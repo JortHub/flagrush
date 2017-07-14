@@ -54,8 +54,8 @@ module.exports = function(io) {
 		s.fuel = Math.round(Math.random() * 7) + 3;
 
 		s.spawn = function() {
-			s.x = Math.random() * self.mapSize;
-			s.y = Math.random() * self.mapSize;
+			s.x = Math.random() * (self.mapSize - 6000) + 3000;
+			s.y = Math.random() * (self.mapSize - 6000) + 3000;
 			s.r = Math.random() * 360;
 
 			for(var i in self.players) {
@@ -71,7 +71,7 @@ module.exports = function(io) {
 			}
 
 			for(var n in self.players) {
-				self.players[n].socket.emit("fuel_spawn", s.x, s.y, s.r, s.fuel);
+				self.players[n].socket.emit("fuel_spawn", Math.round(s.x), Math.round(s.y), Math.round(s.r), s.fuel);
 			}
 		}
 
@@ -84,10 +84,6 @@ module.exports = function(io) {
 				return self.players[n];
 			}
 		}
-	}
-
-	self.round = function(value, decimals) {
-		return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 	}
 
 	self.collidingRect = function(player, rect) {
@@ -397,13 +393,13 @@ module.exports = function(io) {
 							check.boost = 100;
 						}
 
-						if(Math.floor(check.boost / (100 / 15)) != check.clientBoost) {
-							check.clientBoost = Math.floor(check.boost / (100 / 15));
+						if(Math.round(check.boost / (100 / 15)) != check.clientBoost) {
+							check.clientBoost = Math.round(check.boost / (100 / 15));
 							check.socket.emit("stat", "boost", check.clientBoost);
 						}
 
 						for(var n in self.players) {
-							self.players[n].socket.emit("fuel_remove", tank.x, tank.y);
+							self.players[n].socket.emit("fuel_remove", Math.round(tank.x), Math.round(tank.y));
 						}
 
 						for(var n in self.fueltanks) {
@@ -467,8 +463,8 @@ module.exports = function(io) {
 								player.boost = 100;
 							}
 
-							if(Math.floor(player.boost / (100 / 15)) != player.clientBoost) {
-								player.clientBoost = Math.floor(player.boost / (100 / 15));
+							if(Math.round(player.boost / (100 / 15)) != player.clientBoost) {
+								player.clientBoost = Math.round(player.boost / (100 / 15));
 								player.socket.emit("stat", "boost", player.clientBoost);
 							}
 
@@ -495,6 +491,8 @@ module.exports = function(io) {
 		// Update the players for every player
 		for(var n in self.players) {
 			self.players[n].updatePlayers(self.players);
+		}
+		for(var n in self.players) {
 			self.players[n].updateMyself();
 		}
 
@@ -595,11 +593,20 @@ module.exports = function(io) {
 
 			for(var n in self.players) {
 				self.players[n].socket.emit("spawn", name, p.x, p.y, p.r, p.team);
-				socket.emit("spawn", self.players[n].name, self.players[n].x, self.players[n].y, self.players[n].r, self.players[n].team);
+				socket.emit("spawn", 
+					self.players[n].name, 
+					Math.round(self.players[n].x), 
+					Math.round(self.players[n].y), 
+					Math.round(self.players[n].r), 
+					self.players[n].team);
 			}
 
 			for(var n in self.fueltanks) {
-				socket.emit("fuel_spawn", self.fueltanks[n].x, self.fueltanks[n].y, self.fueltanks[n].r, self.fueltanks[n].fuel);
+				socket.emit("fuel_spawn", 
+					Math.round(self.fueltanks[n].x), 
+					Math.round(self.fueltanks[n].y), 
+					Math.round(self.fueltanks[n].r), 
+					self.fueltanks[n].fuel);
 			}
 
 			if(self.capturing) {
@@ -613,7 +620,7 @@ module.exports = function(io) {
 
 			p.start();
 
-			socket.emit("spawn", p.name, p.x, p.y, p.r, p.team);
+			socket.emit("spawn", p.name, Math.round(p.x), Math.round(p.y), Math.round(p.r), p.team);
 
 			console.log("Player " + name + " (" + p.team + ") connected");
 

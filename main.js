@@ -21,6 +21,9 @@ function chooseServer() {
 app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/public/index.html');
 });
+app.get('/testing', function(req, res) {
+	res.sendFile(__dirname + '/public/testing.html');
+});
 
 // All the other files
 app.use(express.static(__dirname + '/public'));

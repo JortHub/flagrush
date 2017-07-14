@@ -6,6 +6,10 @@ module.exports = {
 		self.x = 0;
 		self.y = 0;
 		self.r = 0;
+		self.oldX = 0;
+		self.oldY = 0;
+		self.oldR = 0;
+		self.waitingSend = false;
 
 		// Some socket information
 		self.socket = socket;
@@ -86,7 +90,7 @@ module.exports = {
 					var dy = self.y - check.y;
 
 					if(Math.sqrt(dx * dx + dy * dy) <= self.radius + check.radius) {
-						generateLocation(players, mapSize, szX, szY, szW, szH);
+						self.generateLocation(players, mapSize, szX, szY, szW, szH);
 						return;
 					}
 				}
@@ -94,7 +98,7 @@ module.exports = {
 
 			if(self.x < self.radius || self.x > (mapSize - self.radius) ||
 			   self.y < self.radius || self.y > (mapSize - self.radius)) {
-				generateLocation(players, mapSize, szX, szY, szW, szH);
+				self.generateLocation(players, mapSize, szX, szY, szW, szH);
 				return;
 			}
 		}
@@ -132,8 +136,8 @@ module.exports = {
 				self.health = 50;
 			}
 
-			if(Math.floor(self.health / (50 / 15)) != self.clientHealth) {
-				self.clientHealth = Math.floor(self.health / (50 / 15));
+			if(Math.round(self.health / (50 / 15)) != self.clientHealth) {
+				self.clientHealth = Math.round(self.health / (50 / 15));
 				self.socket.emit("stat", "health", self.clientHealth);
 			}
 		}
@@ -145,8 +149,8 @@ module.exports = {
 			self.boost--;
 			self.isBoosting = true;
 
-			if(Math.floor(self.boost / (100 / 15)) != self.clientBoost) {
-				self.clientBoost = Math.floor(self.boost / (100 / 15));
+			if(Math.round(self.boost / (100 / 15)) != self.clientBoost) {
+				self.clientBoost = Math.round(self.boost / (100 / 15));
 				self.socket.emit("stat", "boost", self.clientBoost);
 			}
 
@@ -173,8 +177,8 @@ module.exports = {
 				players[n].socket.emit("hit", self.name);
 			}
 
-			if(Math.floor(self.health / (50 / 15)) != self.clientHealth) {
-				self.clientHealth = Math.floor(self.health / (50 / 15));
+			if(Math.round(self.health / (50 / 15)) != self.clientHealth) {
+				self.clientHealth = Math.round(self.health / (50 / 15));
 				self.socket.emit("stat", "health", self.clientHealth);
 			}
 
@@ -205,8 +209,8 @@ module.exports = {
 				players[n].socket.emit("hit", self.name);
 			}
 
-			if(Math.floor(self.health / (50 / 15)) != self.clientHealth) {
-				self.clientHealth = Math.floor(self.health / (50 / 15));
+			if(Math.round(self.health / (50 / 15)) != self.clientHealth) {
+				self.clientHealth = Math.round(self.health / (50 / 15));
 				self.socket.emit("stat", "health", self.clientHealth);
 			}
 
@@ -241,8 +245,8 @@ module.exports = {
 				self.heat = 0;
 			}
 
-			if(Math.floor(self.heat / (20 / 15)) != self.clientHeat) {
-				self.clientHeat = Math.floor(self.heat / (20 / 15));
+			if(Math.round(self.heat / (20 / 15)) != self.clientHeat) {
+				self.clientHeat = Math.round(self.heat / (20 / 15));
 				socket.emit("stat", "heat", self.clientHeat);
 			}
 		}
@@ -271,8 +275,8 @@ module.exports = {
 				self.heat = 20;
 			}
 
-			if(Math.floor(self.heat / (20 / 15)) != self.clientHeat) {
-				self.clientHeat = Math.floor(self.heat / (20 / 15));
+			if(Math.round(self.heat / (20 / 15)) != self.clientHeat) {
+				self.clientHeat = Math.round(self.heat / (20 / 15));
 				socket.emit("stat", "heat", self.clientHeat);
 			}
 
@@ -288,15 +292,39 @@ module.exports = {
 					continue;
 				}
 
+				if(Math.round(player.x) == Math.round(player.oldX) && 
+					Math.round(player.y) == Math.round(player.oldY) &&
+					Math.round(player.r) == Math.round(player.oldR) &&
+					!player.waitingSend) {
+					socket.emit("move", player.name, 0, 0, 0, false);
+					continue;
+				}
+
 				if((player.x - self.x <= self.max || player.x - self.x >= -self.max) && 
 				   (player.y - self.y <= self.max || player.y - self.y >= -self.max)) {
-					socket.emit("move", player.name, player.x, player.y, player.r);
+					socket.emit("move", player.name, Math.round(player.x), Math.round(player.y), Math.round(player.r), true);
 				}
 			}
 		}
 
 		self.updateMyself = function() {
-			socket.emit("move", self.name, self.x, self.y, self.r);
+			if(Math.round(self.x) == Math.round(self.oldX) && 
+				Math.round(self.y) == Math.round(self.oldY) &&
+				Math.round(self.r) == Math.round(self.oldR)) {
+				if(!self.waitingSend) {
+					socket.emit("move", self.name, 0, 0, 0, false);
+					self.waitingSend = true;
+				}
+				return;
+			}
+
+			self.waitingSend = false;
+
+			socket.emit("move", self.name, Math.round(self.x), Math.round(self.y), Math.round(self.r), true);
+
+			self.oldX = self.x;
+			self.oldY = self.y;
+			self.oldR = self.r;
 		}
 
 		self.hold = function(button, state) {
