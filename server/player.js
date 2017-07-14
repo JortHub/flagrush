@@ -110,7 +110,7 @@ module.exports = {
 		}
 
 		self.upgrade = function(upgrade) {
-			if(self.pointsLeft > 0) {
+			if(1 == 1) {
 				if(upgrade == "speed" && self.speed < 15) {
 					self.speed++;
 					self.pointsLeft--;
