@@ -758,27 +758,27 @@ function update() {
 		   !flagCaptured) {
 			ctx.drawImage(main_flag.img, camera.calcX(flagX), camera.calcY(flagY), camera.calc(1000), camera.calc(1000));
 		}
-	}
 
-	for(var n in fuel_tanks) {
-		ctx.save();
+		for(var n in fuel_tanks) {
+			ctx.save();
 
-		var tank = fuel_tanks[n];
-		if (tank.x < (me.x - 3000) || tank.x > (me.x + 3000) ||
-			tank.y < (me.y - 3000) || tank.y > (me.y + 3000)) {
-			continue;
+			var tank = fuel_tanks[n];
+			if (tank.x < (me.x - 3000) || tank.x > (me.x + 3000) ||
+				tank.y < (me.y - 3000) || tank.y > (me.y + 3000)) {
+				continue;
+			}
+			ctx.translate(camera.calcX(tank.x), camera.calcY(tank.y));
+			ctx.rotate(tank.r * Math.PI / 180);
+
+			ctx.drawImage(fuel_tank.img, camera.calc(-66), camera.calc(-219), camera.calc(133), camera.calc(438));
+
+			ctx.fillStyle = "rgb(" + (255 - (255 * (tank.fuel / 10))) + ", " + (255 * (tank.fuel)) + ", 0)";
+
+			for(var i = 0; i < tank.fuel; i++) {
+				ctx.fillRect(camera.calc(-11), camera.calc(152 - 14 * i), camera.calc(22), camera.calc(11));
+			}
+			ctx.restore();
 		}
-		ctx.translate(camera.calcX(tank.x), camera.calcY(tank.y));
-		ctx.rotate(tank.r * Math.PI / 180);
-
-		ctx.drawImage(fuel_tank.img, camera.calc(-66), camera.calc(-219), camera.calc(133), camera.calc(438));
-
-		ctx.fillStyle = "rgb(" + (255 - (255 * (tank.fuel / 10))) + ", " + (255 * (tank.fuel)) + ", 0)";
-
-		for(var i = 0; i < tank.fuel; i++) {
-			ctx.fillRect(camera.calc(-11), camera.calc(152 - 14 * i), camera.calc(22), camera.calc(11));
-		}
-		ctx.restore();
 	}
 
 	for(var n in players) {
