@@ -27,31 +27,31 @@ var camera_ = function(canvas, viewport) {
 	}
 
 	self.calcX = function(x) {
-		return Math.floor((x * viewport.scale + (canvas.width / 2) - self.x * viewport.scale));
+		return Math.round((x * viewport.scale + (canvas.width / 2) - self.x * viewport.scale));
 	}
 
 	self.calcY = function(y) {
-		return Math.floor((y * viewport.scale + (canvas.height / 2) - self.y * viewport.scale));
+		return Math.round((y * viewport.scale + (canvas.height / 2) - self.y * viewport.scale));
 	}
 
 	self.halfX = function() {
-		return  Math.floor((canvas.width / 2) / viewport.scale);
+		return  Math.round((canvas.width / 2) / viewport.scale);
 	}
 
 	self.halfY = function() {
-		return  Math.floor((canvas.height / 2) / viewport.scale);
+		return  Math.round((canvas.height / 2) / viewport.scale);
 	}
 
 	self.calc = function(n) {
-		return Math.floor(n * viewport.scale);
+		return Math.round(n * viewport.scale);
 	}
 
 	self.middleX = function() {
-		return (canvas.width / 2);
+		return Math.round(canvas.width / 2);
 	}
 
 	self.middleY = function() {
-		return (canvas.height / 2);
+		return Math.round(canvas.height / 2);
 	}
 
 	return self;

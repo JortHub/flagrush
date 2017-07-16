@@ -10,6 +10,7 @@ var player = function() {
 	self.name = "";
 	self.moving = false;
 	self.team = 0;
+	self.health = 15;
 
 	self.kills = 0;
 
@@ -44,6 +45,7 @@ var player = function() {
 	self.difX = 0;
 	self.difY = 0;
 	self.positionInterval = 6;
+	self.rotating = false;
 
 	self.setX = function(x) {
 		self.oldX = self.x;
@@ -56,20 +58,20 @@ var player = function() {
 	}
 
 	self.update = function() {
-		if(!self.moving) {
-			return;
+		if(self.moving) {
+			self.x += self.difX / self.positionInterval;
+			self.y += self.difY / self.positionInterval;
 		}
 
-		self.x += self.difX / self.positionInterval;
-		self.y += self.difY / self.positionInterval;
+		if(self.rotating) {
+			self.r += self.difR / self.rotationInterval;
 
-		self.r += self.difR / self.rotationInterval;
-
-		if(self.r > 360) {
-			self.r -= 360;
-		}
-		else if(self.r < 0) {
-			self.r += 360
+			if(self.r > 360) {
+				self.r -= 360;
+			}
+			else if(self.r < 0) {
+				self.r += 360
+			}
 		}
 	}
 

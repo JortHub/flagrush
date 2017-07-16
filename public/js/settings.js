@@ -5,6 +5,7 @@ var settings_ = function() {
 	self.render = document.getElementById('render');
 	self.smooth = document.getElementById('smooth');
 	self.tps = document.getElementById('tps');
+	self.control = document.getElementById('control');
 	self.prtsc = document.getElementById('prtsc');
 	self.fullsc = document.getElementById('fullsc');
 
@@ -30,6 +31,10 @@ var settings_ = function() {
 
 	self.prtsc.addEventListener("click", function() {
 		self.set_prtsc();
+	});
+
+	self.control.addEventListener("change", function(e) {
+		self.set_control(e.target.value);
 	});
 
 	self.fullsc.addEventListener("click", function() {
@@ -67,6 +72,12 @@ var settings_ = function() {
 				self.set_tps(item);
 				self.tps.value = item;
 			}
+
+			item = localStorage.getItem("control");
+			if(item != null && item != "") {
+				self.set_control(item);
+				self.control.value = item;
+			}
 			
 		}
 	}
@@ -78,6 +89,7 @@ var settings_ = function() {
 			localStorage.setItem("render", self.render.value);
 			localStorage.setItem("smooth", self.smooth.value);
 			localStorage.setItem("tps", self.tps.value);
+			localStorage.setItem("control", self.control.value);
 		}
 	}
 
@@ -176,6 +188,10 @@ var settings_ = function() {
 
 	        self.fullsc.innerHTML = "open";
 	    }
+	}
+
+	self.set_control = function(e) {
+		use_mouse = e == "mouse";
 	}
 
 	return self;

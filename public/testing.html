@@ -4,10 +4,12 @@
 		<title>FlagRush - A CTF .IO Game</title>
 
 		<meta charset="utf-8">
-		<meta name="description" content="FlagRush is a free to play capture the flag game. You play as a space ship that has to defend or capture the flag to win the game." />
+		<meta name="description" content="FlagRush is a free to play capture the flag game. You play as a spaceship that has to defend or capture the flag to win the game." />
 		<meta name="google" content="notranslate" />
 		<meta name="copyright" content="JortvD (c) 2017" />
 		<meta name="keywords" content="io,game,iogame,io game,iogames,io games,ctf,capture the flag,space,jortvd,flagrush" />
+		<link rel="icon" href="gfx/favicon.png?v=1.1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 
 		<link rel="stylesheet" href="css/fonts.css">
 		<link rel="stylesheet" href="css/stylesheet.css">
@@ -24,7 +26,71 @@
 	</head>
 	<body>
 		<div id="main">
+			<canvas id="main-cvs"></canvas>
 			<div class="left">
+				<div class="section">
+					<div class="title">Tips</div>
+					<div class="content">
+						<ul class="tips">
+							<li>Get points for killing other players and use them for upgrades.</li>
+							<li>Follow the ingame instructions to know what you have to do.</li>
+							<li>Use the minimap for directions so you don't get lost.</li>
+							<li>Collect the boost tanks to refill your boost.</li>
+						</ul>
+					</div>
+				</div>
+				<div class="section">
+					<div class="title">Changelog</div>
+					<div class="content">
+						<h1>Update v1.0.0</h1>
+						<ul class="update">
+							<li>The very first public update!</li>
+							<li>Added a universe with shiny stars</li>
+							<li>Added some flying objects with guns</li>
+							<li>Added an insane amount of UI</li>
+							<li>Added settings for the people who want high FPS</li>
+							<li>Added upgradable special abilities</li>
+							<li>Expect more to come...</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="middle">
+				<div class="logo"><img src="gfx/logo_transparent.png"></img></div>
+				<div class="menu">
+					<input type="text" id="username" placeholder="username" autocomplete="off">
+					<button id="enter">Enter Game</button>
+				</div>
+				<div class="ad" style="display: none;">
+					
+				</div>
+			</div>
+			<div class="right">
+				<div class="section">
+					<div class="title">Controls</div>
+					<div class="content">
+						<div class="row" style="height:50px">
+							<img src="gfx/space_button.png"></img>
+							<div>Press the space button to accelerate</div>
+						</div>
+						<div class="row" style="height:50px">
+							<img src="gfx/shift_button.png"></img>
+							<div>Shift slows you down with some backwards thrust</div>
+						</div>
+						<div class="row" style="height:50px">
+							<img src="gfx/mouse_move.png"></img>
+							<div>Move your mouse and the spaceship will rotate</div>
+						</div>
+						<div class="row" style="height:75px">
+							<img src="gfx/left_button.png"></img>
+							<div>Click the left mouse button to shoot lasers</div>
+						</div>
+						<div class="row" style="height:75px">
+							<img src="gfx/right_button.png"></img>
+							<div>Use the right mouse button to activate your boost</div>
+						</div>
+					</div>
+				</div>
 				<div class="section">
 					<div class="title">Links</div>
 					<div class="content">
@@ -40,77 +106,6 @@
 						<a href="https://iogames.space">Other .io games</a>
 						<br />
 						<a href="https://github.com/JortHub/flagrush">View the source</a>
-					</div>
-				</div>
-				<div class="section">
-					<div class="title">Changelog</div>
-					<div class="content">
-						<h1>Update v0.0.1</h1>
-						<ul class="update">
-							<li>The very first update!</li>
-							<li>Added a universe with shiny stars</li>
-							<li>Added some flying objects with guns</li>
-							<li>Added an insane amount of UI</li>
-							<li>Added settings for the people who want high FPS</li>
-							<li>Added upgradable special abilities</li>
-							<li>Added some ads to support me</li>
-							<li>Expect more to come...</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="middle">
-				<div class="logo"><img src="gfx/logo_transparent.png"></img></div>
-				<div class="menu">
-					<input type="text" id="username" placeholder="username" autocomplete="off">
-					<button id="enter">Enter Game</button>
-				</div>
-				<div class="ad">
-					
-				</div>
-			</div>
-			<div class="right">
-				<div class="section">
-					<div class="title">Controls</div>
-					<div class="content">
-						<div class="row" style="height:50px">
-							<img src="gfx/w_button.png"></img>
-							<div>Use this to move forwards</div>
-						</div>
-						<div class="row" style="height:50px">
-							<img src="gfx/s_button.png"></img>
-							<div>Used to get some backwards thrust</div>
-						</div>
-						<div class="row" style="height:50px">
-							<img src="gfx/a_button.png"></img>
-							<div>Rotates you anticlockwise</div>
-						</div>
-						<div class="row" style="height:50px">
-							<img src="gfx/d_button.png"></img>
-							<div>Rotates you clockwise</div>
-						</div>
-						<div class="row" style="height:50px">
-							<img src="gfx/space_button.png"></img>
-							<div>Press space to use your boosters to speed up</div>
-						</div>
-						<div class="row" style="height:75px">
-							<img src="gfx/left_button.png"></img>
-							<div>Used to shoot flashy lasers</div>
-						</div>
-					</div>
-				</div>
-				<div class="section">
-					<div class="title">Tips</div>
-					<div class="content">
-						<ul class="tips">
-							<li>Killing other players gives you upgrade points.</li>
-							<li>Spend your upgrade points on the special abilities.</li>
-							<li>Use the keys 1 to 4 to quick-switch the menu items.</li>
-							<li>Collect the boost tanks to refill your boost.</li>
-							<li>Follow the ingame instructions.</li>
-							<li>Use the minimap so you don't get lost.</li>
-							<li>Don't even try to shoot your teammates...</li>
-						</ul>
 					</div>
 				</div>
 			</div>
@@ -150,17 +145,23 @@
 				<div class="game-upgrades-row">
 					<div class="title">Speed</div>
 					<div class="items" id="speed"></div>
-					<div class="upgrade active" id="speed-button"></div>
+					<div class="upgrade active" id="speed-button">
+						<span></span>
+					</div>
 				</div>
 				<div class="game-upgrades-row">
 					<div class="title">Regen.</div>
 					<div class="items" id="regen"></div>
-					<div class="upgrade active" id="regen-button"></div>
+					<div class="upgrade active" id="regen-button">
+						<span></span>
+					</div>
 				</div>
 				<div class="game-upgrades-row">
 					<div class="title">Damage</div>
 					<div class="items" id="damage"></div>
-					<div class="upgrade inactive" id="damage-button"></div>
+					<div class="upgrade active" id="damage-button">
+						<span></span>
+					</div>
 				</div>
 			</div>
 
@@ -192,6 +193,11 @@
 							<canvas id="minimap-canvas" width="200px" height="200px"></canvas>
 						</div>
 						<div id="square-leaderboard" class="inactive">
+							<div class="namerow">
+								<div class="rank">n</div>
+								<div class="name">name</div>
+								<div class="amount">kills</div>
+							</div>
 							<div id="leaderboard-rows">
 								<div class="row">
 									<div class="rank">1</div>
@@ -286,15 +292,24 @@
 									<div class="title">Smooth</div>
 									<div class="content">
 										<select id="smooth">
-											<option value="true">true</option>
-											<option value="false">false</option>
+											<option value="true">on</option>
+											<option value="false">off</option>
 										</select>
 									</div>
 								</div>
 								<div class="setting">
 									<div class="title">TPS</div>
 									<div class="content">
-										<input value="5" type="number" id="tps" min="1" max="30">
+										<input value="5" type="number" id="tps" min="1" max="10">
+									</div>
+								</div>
+								<div class="setting">
+									<div class="title">Control</div>
+									<div class="content">
+										<select id="control">
+											<option value="mouse">mouse</option>
+											<option value="keys">keys</option>
+										</select>
 									</div>
 								</div>
 							</div>

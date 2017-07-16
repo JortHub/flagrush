@@ -7,6 +7,44 @@ var minimap_square = document.getElementById('square-minimap');
 var leaderboard_square = document.getElementById('square-leaderboard');
 var settings_square = document.getElementById('square-settings');
 
+var open_menu = 0;
+
+function open_next() {
+	open_menu++;
+
+	if(open_menu > 2) {
+		open_menu = 2;
+	}
+
+	if(open_menu == 0) {
+		open_minimap();
+	}
+	else if(open_menu == 1) {
+		open_leaderboard();
+	}
+	else if(open_menu == 2) {
+		open_settings();
+	}
+}
+
+function open_previous() {
+	open_menu--;
+
+	if(open_menu < 0) {
+		open_menu = 0;
+	}
+
+	if(open_menu == 0) {
+		open_minimap();
+	}
+	else if(open_menu == 1) {
+		open_leaderboard();
+	}
+	else if(open_menu == 2) {
+		open_settings();
+	}
+}
+
 minimap_button.onclick = function() {
 	open_minimap();
 }
@@ -20,6 +58,8 @@ function open_minimap() {
 		minimap_square.className = "active";
 		leaderboard_square.className = "inactive";
 		settings_square.className = "inactive";
+
+		open_menu = 0;
 	}
 }
 
@@ -36,6 +76,8 @@ function open_leaderboard() {
 		leaderboard_square.className = "active";
 		minimap_square.className = "inactive";
 		settings_square.className = "inactive";
+
+		open_menu = 1;
 	}
 }
 
@@ -52,6 +94,8 @@ function open_settings() {
 		settings_square.className = "active";
 		leaderboard_square.className = "inactive";
 		minimap_square.className = "inactive";
+
+		open_menu = 2;
 	}
 }
 

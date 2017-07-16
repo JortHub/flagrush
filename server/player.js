@@ -6,10 +6,20 @@ module.exports = {
 		self.x = 0;
 		self.y = 0;
 		self.r = 0;
+
+		// The old position and rotation
 		self.oldX = 0;
 		self.oldY = 0;
 		self.oldR = 0;
+
+		// If the waiting packet has been send yet
 		self.waitingSend = false;
+
+		// The target rotation
+		self.targetR = -1;
+
+		// The slowdown amount for the player
+		self.slowdown = null;
 
 		// Some socket information
 		self.socket = socket;
@@ -59,29 +69,57 @@ module.exports = {
 		// The amount of kills a player has
 		self.kills = 0;
 
+		// If the player is shooting
 		self.shooting = false;
+
+		// The current turret of the player
 		self.curTurret = 0;
+
+		// The cooldown for shooting
 		self.cooldown = 0;
+
+		// If the player is cooling down
 		self.cooling_down = false;
+
+		// If the player is currently using boost
 		self.isBoosting = false;
+
+		// If the player is safe, which attackers are in the safezone
 		self.safe = false;
+
+		// If the player can shoot
 		self.canShoot = true;
+
+		// The message to=ime for the player
 		self.messageTime = 0;
+
+		// The player's time on the flag
 		self.flagTime = 0;
+
+		// The points the player has left
 		self.pointsLeft = 0;
 
+		// The AFK time of the player
 		self.waitTime = 0;
 
+		// Generates the location for the player
 		self.generateLocation = function(players, mapSize, szX, szY, szW, szH) {
+			// If the player is a attacker, spawn him in the safezone
 			if(self.team == 0) {
 				self.x = szX + Math.random() * szW;
 				self.y = szY + Math.random() * szH;
 			}
+
+			// If the player is a defender, spawn in the above half of the map
 			else {
 				self.x = Math.random() * mapSize;
 				self.y = Math.random() * mapSize / 2;
 			}
 
+			// Calculate a random rotation
+			self.r = Math.random() * 360;
+
+			// Check if the location is not on other players
 			for(var i in players) {
 				if(players[i] != self) {
 					var check = players[i];
@@ -96,6 +134,7 @@ module.exports = {
 				}
 			}
 
+			// Check if the location is inside the map
 			if(self.x < self.radius || self.x > (mapSize - self.radius) ||
 			   self.y < self.radius || self.y > (mapSize - self.radius)) {
 				self.generateLocation(players, mapSize, szX, szY, szW, szH);
@@ -103,24 +142,30 @@ module.exports = {
 			}
 		}
 
+		// Start the player, so send him all of his stat packets
 		self.start = function() {
 			self.socket.emit("stat", "health", self.clientHealth);
 			self.socket.emit("stat", "heat", self.clientHeat);
 			self.socket.emit("stat", "boost", self.clientBoost);
 		}
 
+		// Upgrade on the player's upgrades
 		self.upgrade = function(upgrade) {
-			if(1 == 1) {
+			// Check if the player is even able to upgrade
+			if(self.pointsLeft > 0) { 
+				// Add speed to the player
 				if(upgrade == "speed" && self.speed < 15) {
 					self.speed++;
 					self.pointsLeft--;
 					console.log("Player " + self.name + " upgraded " + upgrade + " to lvl " + self.speed);
 				}
+				// Add regen to the player
 				else if(upgrade == "regen" && self.regen < 15) {
 					self.regen++;
 					self.pointsLeft--;
 					console.log("Player " + self.name + " upgraded " + upgrade + " to lvl " + self.regen);
 				}
+				// Add damage to the player
 				else if(upgrade == "damage" && self.damage < 15) {
 					self.damage++;
 					self.pointsLeft--;
@@ -129,31 +174,43 @@ module.exports = {
 			}
 		}
 
-		self.heal = function() {
-			self.health += (self.regen / 15);
+		// Heals the player
+		self.heal = function(players) {
+			// The amount it will regenerate
+			self.health += (0.1 * (self.regen / 15)) + 0.03;
 
+			// If the health is over the maximum, set it back to the maximum
 			if(self.health > 50) {
 				self.health = 50;
 			}
 
+			// Update the health for everyone
 			if(Math.round(self.health / (50 / 15)) != self.clientHealth) {
 				self.clientHealth = Math.round(self.health / (50 / 15));
 				self.socket.emit("stat", "health", self.clientHealth);
+				for(var n in players) {
+					players[n].socket.emit("health", self.name, self.clientHealth);
+				}
 			}
 		}
 
+		// Boosts the player
 		self.boosting = function(players, boostM) {
+			// Adds the forces and speed
 			self.forceM = 100;
 			self.speedM = boostM;
 
+			// Decrease the boost left
 			self.boost--;
 			self.isBoosting = true;
 
+			// Update the stat of player
 			if(Math.round(self.boost / (100 / 15)) != self.clientBoost) {
 				self.clientBoost = Math.round(self.boost / (100 / 15));
 				self.socket.emit("stat", "boost", self.clientBoost);
 			}
 
+			// Send to all the players in range if the player is boosting
 			for(var n in players) {
 				var player = players[n];
 
@@ -166,34 +223,48 @@ module.exports = {
 			}
 		}
 
+		// Hits a player
 		self.hit = function(player, players, flagPlayer) {
+			// A player can't get hit when they're in the safezone
 			if(self.safe) {
 				return;
 			}
 
-			self.health -= 1 + (player.damage / 10);
+			// Remove the health from the player
+			self.health -= 1 + (player.damage / 15);
 
+			// Send a hit package to all of the players
 			for(var n in players) {
 				players[n].socket.emit("hit", self.name);
 			}
 
+			// Update the health for everyone
 			if(Math.round(self.health / (50 / 15)) != self.clientHealth) {
 				self.clientHealth = Math.round(self.health / (50 / 15));
 				self.socket.emit("stat", "health", self.clientHealth);
+				for(var n in players) {
+					players[n].socket.emit("health", self.name, self.clientHealth);
+				}
 			}
 
+			// If the player has no health left
 			if(self.health <= 0) {
+				// Add a kill and a point to the player
 				player.kills++;
 				player.pointsLeft++;
 
+				// Send everyone the killed packet
 				for(var n in players) {
 					players[n].socket.emit("killed", self.name, player.name);
 				}
 
+				// Log that the player has been killed
 				console.log("Player " + self.name + " was killed by " + player.name);
 
+				// Disconnect the socket
 				self.socket.disconnect();
 
+				// Return true
 				return true;
 			}
 			
@@ -212,11 +283,14 @@ module.exports = {
 			if(Math.round(self.health / (50 / 15)) != self.clientHealth) {
 				self.clientHealth = Math.round(self.health / (50 / 15));
 				self.socket.emit("stat", "health", self.clientHealth);
+				for(var n in players) {
+					players[n].socket.emit("health", self.name, self.clientHealth);
+				}
 			}
 
 			if(self.health <= 0) {
 				for(var n in players) {
-					players[n].socket.emit("killed", self.name, self.name);
+					players[n].socket.emit("killed", self.name, "the safezone");
 				}
 
 				self.socket.disconnect();
@@ -269,7 +343,7 @@ module.exports = {
 				player.socket.emit("shoot", self.name, self.curTurret);
 			}
 
-			self.heat += 2;
+			self.heat += 1;
 
 			if(self.heat > 20) {
 				self.heat = 20;
@@ -294,9 +368,10 @@ module.exports = {
 
 				if(Math.round(player.x) == Math.round(player.oldX) && 
 					Math.round(player.y) == Math.round(player.oldY) &&
-					Math.round(player.r) == Math.round(player.oldR) &&
-					!player.waitingSend) {
-					socket.emit("move", player.name, 0, 0, 0, false);
+					Math.round(player.r) == Math.round(player.oldR)) {
+					if(!player.waitingSend) {
+						socket.emit("move", player.name, 0, 0, 0, false);
+					}
 					continue;
 				}
 
@@ -332,7 +407,13 @@ module.exports = {
 		}
 
 		self.isHold = function(button) {
-			return self.buttons[button];
+			var b = self.buttons[button];
+
+			if(b == null) {
+				return false;
+			}
+
+			return b;
 		}
 
 		self.addForce = function(forceM, forceR) {

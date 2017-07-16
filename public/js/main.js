@@ -47,6 +47,9 @@ var fuel_tanks = [];
 var me = null;
 var started = false;
 var flagPlayer = null;
+var mouseX = 0;
+var mouseY = 0;
+var mouseInScreen = true;
 
 var statrows = {
 	speed: new statrow(document.getElementById("speed")),
@@ -62,23 +65,95 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
 	restart("There was an error<br /><small>" + msg + "</small>", 5000);
 }
 
+var hints = ["Get points for killing other players and use them for upgrades.",
+			 "Follow the ingame instructions to know what you have to do.",
+			 "Use the minimap for directions so you dont get lost.",
+			 "Collect the boost tanks to refill your boost.",
+			 "You can change the controls to WASD in the settings.",
+			 "Defenders lose health when they go into the safezone.",
+			 "The bar you see on players is their health.",
+			 "For the quality setting to work you need smooth to be turned on.",
+			 "If there are no defenders online, you cant capture the flag.",
+			 "Attackers cant get shot when they are in the safe zone."];
+
+var main_canvas = document.getElementById('main-cvs');
+var main_ctx = main_canvas.getContext('2d');
+var small_spaceship = new img("small_spaceship", "../gfx/small_spaceship.png");
+small_spaceship.load();
+function generate_mainCanvas() {
+	main_canvas.width = window.innerWidth;
+	main_canvas.height = window.innerHeight;
+
+	main_ctx.fillStyle = "#FFFFFF";
+	for(var i = 0; i < 30; i++) {
+		main_ctx.fillRect(
+			Math.round(Math.random() * main_canvas.width),
+			Math.round(Math.random() * main_canvas.height),
+			2, 2
+		);
+	}
+
+	main_ctx.translate(
+		Math.round(Math.random() * main_canvas.width), 
+		Math.round((Math.random() * (main_canvas.height / 2)) + (main_canvas.height / 2))
+	);
+	main_ctx.rotate(
+		Math.round((Math.random() * 360) * Math.PI / 180)
+	);
+	main_ctx.drawImage(
+		small_spaceship.img, 
+		Math.round(-(small_spaceship.oWidth / 2)), 
+		Math.round(-(small_spaceship.oHeight / 2)),
+		small_spaceship.oWidth,
+		small_spaceship.oHeight
+	);
+}
+
+waitForMainCanvas();
+
+function waitForMainCanvas() {
+	setTimeout(function() {
+		if(small_spaceship.loaded) {
+			generate_mainCanvas();
+		}	
+		else {
+			waitForMainCanvas();
+		}
+	}, 50);
+}
+
+window.onresize = function() {
+	if(!started) {
+		generate_mainCanvas();
+	}
+}
+
+function load(length) {
+	length = length || 5000;
+	username = document.getElementById('username').value;
+	
+	var titleMenu = document.getElementById('title');
+	titleMenu.innerHTML = "<span>Loading...<div class='hint'>" + hints[Math.floor(hints.length * Math.random())] + "</div></span>";
+	titleMenu.className = "active";
+	titleMenu.style.zIndex = "10";
+
+	init();
+
+	setTimeout(function() {
+		start_when_loaded();
+	}, length);
+}
+
 document.getElementById("username").addEventListener('keydown', function() {
 	if(!started && event.keyCode == 13) {
-		username = document.getElementById('username').value;
-	
-		var titleMenu = document.getElementById('title');
-		titleMenu.innerHTML = "<span>Loading...</span>";
-		titleMenu.className = "active";
-		titleMenu.style.zIndex = "10";
-
-		init();
-
-		setTimeout(function() {
-			start_when_loaded();
-		}, 2000);
-	}		
+		load();
+	}
+	if(!started && event.keyCode == 113) {
+		load(1000);
+	}	
 });
 
+var use_mouse = true;
 var settings = new settings_();
 
 if(typeof(Storage) !== "undefined") {
@@ -91,36 +166,54 @@ var stars = [];
 
 init_main();
 
+verifyAdblocker();
+
+function verifyAdblocker() {
+	var test = document.createElement('div');
+	test.innerHTML = '&nbsp;';
+	test.className = 'adsbox';
+	document.body.appendChild(test);
+	window.setTimeout(function() {
+		if(test.offsetHeight === 0) {
+			var buttons = document.getElementsByClassName("upgrade");
+
+			for(var n in buttons) {
+				//buttons[n].className = "upgrade adblocker";
+			}
+		}
+		test.remove();
+	}, 100);
+}
+
 function generate_stars() {
-	var x = me.x;
-	var y = me.y;
+	if(me == null) {
+		return;
+	}
 
 	if(stars.length == 0) {
-		for(var i = 0; i < 20; i++) {
-			stars[i] = {x: x - 3000 + (Math.random() * 6000), y: y - 3000 + (Math.random() * 6000)};
+		for(var i = 0; i < 40; i++) {
+			stars[i] = {x: me.x - (Math.random() * 8000) + 4000, y: me.y - (Math.random() * 8000) + 4000};
 		}
 	}
 	else {
 		for(var i = 0; i < stars.length; i++) {
 			var star = stars[i];
-			if (star.x < (x - 3000) || star.x > (x + 3000) ||
-				star.y < (y - 3000) || star.y > (y + 3000)) {
+			if(star.x < me.x-4000 || star.x > me.x+4000 || star.y < me.y-4000 || star.y > me.y+4000) {
 				var n = Math.round(Math.random() * 3);
 
 				if(n == 0) {
-					stars[i] = {x: x - 3000 + Math.random() * 6000, y: x - 3000};
+					stars[i] = {x: me.x - (Math.random() * 6000) + 3000, y: me.y - 3000};
 				}
 				else if(n == 1) {
-					stars[i] = {x: x - 3000 + Math.random() * 6000, y: x + 3000};
+					stars[i] = {x: me.x - (Math.random() * 6000) + 3000, y: me.y + 3000};
 				}
 				else if(n == 2) {
-					stars[i] = {x: x - 3000, y: y - 3000 + Math.random() * 6000};
+					stars[i] = {x: me.x - 3000, y: me.y - (Math.random() * 6000) + 3000};
 				}
 				else {
-					stars[i] = {x: x + 3000, y: y - 3000 + Math.random() * 6000};
+					stars[i] = {x: me.x + 3000, y: me.y - (Math.random() * 6000) + 3000};
 				}
 			}
-			
 		}
 	}
 }
@@ -236,15 +329,24 @@ function init_server() {
 
 		if(!state) {
 			p.moving = false;
+			p.rotating = false;
 			return;
 		}
 		else {
-			p.moving = true;
+			if(Math.round(p.oldX) != Math.round(x) || Math.round(p.oldY) != Math.round(y)) {
+				p.moving = true;
+			}
+
+			if(Math.round(p.oldR) != Math.round(r)) {
+				p.rotating = true;
+			}
 		}
 
 		if(p == me) {
 			p.x = x;
 			p.y = y;
+			p.oldX = x;
+			p.oldY = y;
 		}
 		else {
 			p.setX(x);
@@ -252,10 +354,6 @@ function init_server() {
 		}
 		
 		p.setR(r);
-
-		if(p == me) {
-			generate_stars();
-		}
 	});
 
 	server.on("fuel_spawn", function(x, y, r, fuel) {
@@ -280,6 +378,10 @@ function init_server() {
 		else {
 			statrows.boost.set(value);
 		}
+	});
+
+	server.on("health", function(player, value) {
+		getPlayer(player).health = value;
 	});
 
 	server.on("killed", function(killed, killer) {
@@ -337,6 +439,11 @@ function init_server() {
 		}
 	});
 
+	server.on("kills", function(player, kills) {
+		var p = getPlayer(player);
+		p.kills = kills;
+	});
+
 	server.on("capturing", function(state, name, time) {
 		if(state) {
 			if(name == me.name) {
@@ -349,6 +456,8 @@ function init_server() {
 			}
 		}
 		else {
+			time_left = 0;
+
 			if(me.team == 0) {
 				document.getElementById("game-text-title").innerHTML = "Capture the flag";
 			}
@@ -475,6 +584,9 @@ function restart(reason, length) {
 		camera = new camera_(canvas, viewport);
 		leaderboard = new leaderboard_();
 		settings = new settings_();
+		flagPlayer = null;
+		time_left = 0;
+		generate_mainCanvas();
 
 		statrows = {
 			speed: new statrow(document.getElementById("speed")),
@@ -486,6 +598,7 @@ function restart(reason, length) {
 		};
 
 		players = [];
+		fuel_tanks = [];
 		me = null;
 
 		loc = null;
@@ -517,18 +630,7 @@ function exit() {
 }
 
 document.getElementById('enter').onclick = function() {
-	username = document.getElementById('username').value;
-	
-	var titleMenu = document.getElementById('title');
-	titleMenu.innerHTML = "<span>Loading...</span>";
-	titleMenu.className = "active";
-	titleMenu.style.zIndex = "10";
-
-	init();
-
-	setTimeout(function() {
-		start_when_loaded();
-	}, 1000);
+	load();
 }
 
 function start_when_loaded() {
@@ -591,7 +693,7 @@ var flagH = 1000;
 var flagCaptured = false;
 
 function calcMinimap(n) {
-	return n * 200 / mapSize;
+	return Math.round(n * 200 / mapSize);
 }
 
 var minimapAniTime = 0;
@@ -601,7 +703,7 @@ function update() {
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 	if(document.getElementById("game-text-title").innerHTML.startsWith("Capturing the flag")) {
-		time_left = 30000 - (Date.now() - start_date);
+		time_left = 10000 - (Date.now() - start_date);
 		document.getElementById("game-text-title").innerHTML = "Capturing the flag<br>" + Math.round(time_left/1000) + " seconds left";
 	}
 
@@ -650,15 +752,18 @@ function update() {
 				minimap_ctx.stroke();
 			}
 
-			if(minimapAniTime > 60) {
-				if(!flagCaptured) {
+			if(!flagCaptured && time_left != 0) {
+				if(minimapAniTime > 60) {
 					minimap_ctx.drawImage(flag_small.img, calcMinimap(flagX) - 3, calcMinimap(flagY) - 3, calcMinimap(flagW) + 6, calcMinimap(flagH) + 6);
 				}
-			}
 
-			minimapAniTime++;
-			if(minimapAniTime > 120) {
-				minimapAniTime = 0;
+				minimapAniTime++;
+				if(minimapAniTime > 120) {
+					minimapAniTime = 0;
+				}
+			}
+			else if(!flagCaptured) {
+				minimap_ctx.drawImage(flag_small.img, calcMinimap(flagX) - 3, calcMinimap(flagY) - 3, calcMinimap(flagW) + 6, calcMinimap(flagH) + 6);
 			}
 			
 			if(me.team == 0) {
@@ -772,7 +877,12 @@ function update() {
 
 			ctx.drawImage(fuel_tank.img, camera.calc(-66), camera.calc(-219), camera.calc(133), camera.calc(438));
 
-			ctx.fillStyle = "rgb(" + (255 - (255 * (tank.fuel / 10))) + ", " + (255 * (tank.fuel)) + ", 0)";
+			if(tank.fuel <= 5) {
+				ctx.fillStyle = "rgb(255, " + (255 * (tank.fuel / 5)) + ", 0)";
+			}
+			else {
+				ctx.fillStyle = "rgb(" + (255 - (255 * ((tank.fuel - 5) / 5))) + ", 255, 0)";
+			}
 
 			for(var i = 0; i < tank.fuel; i++) {
 				ctx.fillRect(camera.calc(-11), camera.calc(152 - 14 * i), camera.calc(22), camera.calc(11));
@@ -866,15 +976,26 @@ function update() {
 				p.hit = false;
 			}
 
-			ctx.drawImage(spaceship_hurt.img, camera.calc(x), camera.calc(y), camera.calc(w), camera.calc(h));
+			ctx.drawImage(spaceship_hurt.img, x, y, w, h);
 
 			ctx.globalAlpha = 1;
 
 			p.hitTimer++;
 		}
 
+		if(p.health <= 7) {
+			ctx.fillStyle = "rgb(255, " + Math.round(255 * (p.health / 7)) + ", 0)";
+		}
+		else {
+			ctx.fillStyle = "rgb(" + Math.round(255 - (255 * ((p.health - 7) / 8))) + ", 255, 0)";
+		}
+
+		if(p != me) {
+			ctx.fillRect(camera.calc(-22), camera.calc(-138 + (16.5 * (15 - p.health))), camera.calc(40), camera.calc(16.5 * p.health));
+		}
+
 		if(flagPlayer == p.name && p != me) {
-			ctx.drawImage(main_flag.img, camera.calc(-150), camera.calc(-120), camera.calc(300), camera.calc(300));
+			ctx.drawImage(main_flag.img, camera.calc(-150), camera.calc(-430), camera.calc(300), camera.calc(300));
 		}
 
 		if(p.moving) {
@@ -885,8 +1006,26 @@ function update() {
 	}
 }
 
+var lastTarget = -1;
+
 function tick() {
 	leaderboard.update(players, me);
+	generate_stars();
+
+	if(mouseInScreen && use_mouse) {
+		var c = Math.round(Math.atan2(camera.middleX() - mouseX, camera.middleY() - mouseY) * 180 / Math.PI);
+		if(c < 0) {
+			c = -c;
+		}
+		else {
+			c = 360 - c;
+		}
+
+		if(lastTarget != c) {
+			onInput("target", c);
+			lastTarget = c;
+		}
+	}
 }
 
 function onInput(button, state) {

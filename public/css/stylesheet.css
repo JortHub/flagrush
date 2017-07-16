@@ -27,10 +27,17 @@ canvas {
 	left: 0;
 	right: 0;
 	z-index: 5;
-	background: #000019;
+	background: #00001E;
 
 	width: 100%;
 	height: 100%;
+}
+
+#main canvas {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
 }
 
 #main .left {
@@ -62,6 +69,7 @@ canvas {
 	padding: 8px;
 	border: 2px solid white;
 	margin-bottom: 10px;
+	background: #00001E;
 }
 
 #main .logo {
@@ -127,9 +135,8 @@ canvas {
 #main .section .content {
 	margin-top: 8px;
 	width: 100%;
-	font-family: 'Trebuchet MS';
-	font-size: 15px;
-	font-weight: 700;
+	font-family: 'Verdana';
+	font-size: 14px;
 	line-height: 16px;
 }
 
@@ -181,7 +188,7 @@ canvas {
 }
 
 #main .section .content .update li {
-	font-size: 14px;
+	font-size: 12px;
 }
 
 #main .section:last-child {
@@ -237,6 +244,24 @@ canvas {
 
 #title span small {
 	font-size: 30px;
+}
+
+#title span .hint::before {
+	content: "...";
+}
+
+#title span .hint::after {
+	content: "...";
+}
+
+#title span .hint {
+	font-size: 20px;
+	width: 600px;
+	margin-top: 70px;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	line-height: 30px;
 }
 
 #game {
@@ -419,6 +444,10 @@ canvas {
 	color: #7d7d7d;
 }
 
+.game-upgrades-row .upgrade.adblocker {
+	color: #7d7d7d;
+}
+
 .game-upgrades-row .upgrade::before {
 	content: '+';
 }
@@ -431,6 +460,44 @@ canvas {
 .game-upgrades-row .upgrade.inactive:hover {
 	font-size: 26px;
 	cursor: initial;
+}
+
+.game-upgrades-row .upgrade.adblocker {
+	color: #FF3C3C;
+}
+
+.game-upgrades-row .upgrade.adblocker:hover {
+	font-size: 26px;
+	cursor: initial;
+}
+
+.game-upgrades-row .upgrade.adblocker span::before {
+	content: "Turn off your adblocker to enable this feature";
+}
+
+.game-upgrades-row .upgrade.adblocker span {
+    visibility: hidden;
+    background-color: transparent;
+    text-align: center;
+    padding: 6px 4px 6px 8px;
+    border: 2px solid #FF3C3C;
+    position: absolute;
+    z-index: 1;
+    text-align: center;
+
+    top: 25px;
+    left: calc(100% + 5px);
+    width: 250px;
+
+    font-family: 'm12';
+	font-size: 10px;
+	color: white;
+	letter-spacing: 1px;
+	background: #000019;
+}
+
+.game-upgrades-row .upgrade.adblocker:hover span {
+    visibility: visible;
 }
 
 .item.active {
@@ -572,7 +639,6 @@ canvas {
 
 #leaderboard-rows {
 	width: 100%;
-	padding-top: 15px;
 }
 
 #leaderboard-rows .row {
@@ -581,10 +647,41 @@ canvas {
 	color: white;
 	letter-spacing: 1px;
 	margin-left: 5px;
-	margin-right: 5px;
+	margin-right: 10px;
 	margin-bottom: 6px;
-	width: calc(100% - 10px);
+	width: calc(100% - 15px);
 	height: 10px;
+}
+
+.namerow {
+	font-family: 'm12';
+	font-size: 10px;
+	color: white;
+	letter-spacing: 1px;
+	margin-left: 5px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	width: calc(100% - 15px);
+	height: 10px;
+	padding-top: 12px;
+}
+
+.namerow .rank {
+	float: left;
+	width: 15%;
+	text-align: center;
+}
+
+.namerow .name {
+	float: left;
+	width: 50%;
+	text-align: left;
+}
+
+.namerow .amount {
+	float: left;
+	width: 35%;
+	text-align: right;
 }
 
 #leaderboard-rows .row:last-child {
@@ -606,7 +703,7 @@ canvas {
 #leaderboard-rows .row .amount {
 	float: left;
 	width: 15%;
-	text-align: center;
+	text-align: right;
 }
 
 #leaderboard-you {
