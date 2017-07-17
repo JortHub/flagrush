@@ -389,7 +389,9 @@ function init_server() {
 			restart("You were killed by<br /><i>" + killer + "</i>", 4000);
 		}
 		else {
-			getPlayer(killer).kills++;
+			if(getPlayer(killer) != null) {
+				getPlayer(killer).kills++;
+			}
 		}
 
 		if(killed != me.name && killer == me.name) {
