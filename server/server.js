@@ -35,7 +35,7 @@ module.exports = function(io) {
 	self.boostM = 140;
 
 	// The size of the map
-	self.mapSize = 20000;
+	self.mapSize = 25000;
 	
 	// The teams
 	self.teams = [0, 0];
@@ -65,14 +65,14 @@ module.exports = function(io) {
 	self.flagPlayer = null;
 
 	// The location and size of the flag
-	self.flagX = 9500;
-	self.flagY = 2000;
+	self.flagX = 12000;
+	self.flagY = 2500;
 	self.flagW = 1000;
 	self.flagH = 1000;
 
 	// The location and size of the safezone
-	self.szX = 5000;
-	self.szY = 18000;
+	self.szX = 7500;
+	self.szY = 23000;
 	self.szW = 10000;
 	self.szH = 2000;
 
@@ -99,6 +99,9 @@ module.exports = function(io) {
 
 	// The minimal amount of fuel tanks
 	self.minTanks = 3;
+
+	// The maximum distance for calculations
+	self.maxCalcDistance = 1000;
 
 	// A function to replace all found matches
 	String.prototype.replaceAll = function(search, replacement) {
@@ -240,7 +243,7 @@ module.exports = function(io) {
 			}
 			
 			// If the boosting button is hold, add boost to the player
-			if(player.isHold(-3) && !player.knockback && player.boost > 0) {
+			if(player.isHold(-3) && !player.knockback && player.boost > 0 && self.flagPlayer != player.name) {
 				player.boosting(self.players, self.boostM);
 
 				moved = true;
@@ -443,6 +446,11 @@ module.exports = function(io) {
 				moveX = player.speedM * Math.cos((player.knockbackR - self.extraR) * self.deg);
 				moveY = player.speedM * Math.sin((player.knockbackR - self.extraR) * self.deg);
 
+				if(player.name == self.flagPlayer) {
+					moveX /= 2;
+					moveY /= 2;
+				}
+
 				// Update knockback steps
 				player.knockbackStep--;
 
@@ -477,6 +485,11 @@ module.exports = function(io) {
 
 					var dx = (player.x + moveX) - check.x;
 					var dy = (player.y + moveY) - check.y;
+
+					if(dx > self.maxCalcDistance || dx < -self.maxCalcDistance ||
+						dy > self.maxCalcDistance || dy < -self.maxCalcDistance) {
+						continue;
+					}
 
 					if(Math.sqrt(dx * dx + dy * dy) <= player.radius + check.radius) {
 						moveX = 0;
@@ -607,6 +620,11 @@ module.exports = function(io) {
 					var dx = tank.x - check.x;
 					var dy = tank.y - check.y;
 
+					if(dx > self.maxCalcDistance || dx < -self.maxCalcDistance ||
+						dy > self.maxCalcDistance || dy < -self.maxCalcDistance) {
+						continue;
+					}
+
 					if(Math.sqrt(dx * dx + dy * dy) <= tank.radius + check.radius && check.boost < 100) {
 						check.boost += (100 / 15) * tank.fuel;
 
@@ -681,8 +699,11 @@ module.exports = function(io) {
 						continue;
 					}
 
-					if (check.x < (player.x - 3000) || check.x > (player.x + 3000) ||
-						check.y < (player.y - 3000) || check.y > (player.y + 3000)) {
+					var dx = player.x - check.x;
+					var dy = player.y - check.y;
+
+					if(dx > 3000 || dx < -3000 ||
+						dy > 3000 || dy < -3000) {
 						continue;
 					}
 
@@ -802,6 +823,12 @@ module.exports = function(io) {
 
 		// A player is joining the server
 		socket.on('join', function(name) {
+			// If the server is full, kick the user
+			if(self.players.length > 20) {
+				socket.emit("kicked", "Server is full!");
+				return;
+			}
+
 			// If the name was null, generate a random name
 			if(name == null || name == "") {
 				name = namegenerator.generate();

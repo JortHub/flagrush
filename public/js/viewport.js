@@ -31,9 +31,5 @@ var viewport_ = function(canvas, xScale) {
 
 	self.resize();
 
-	window.onresize = function() {
-		self.resize();
-	}
-
 	return self;
 }

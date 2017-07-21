@@ -119,11 +119,11 @@ canvas {
 }
 
 #main .ad {
-	height: 280px;
-	width: 280px;
+	height: 250px;
+	width: 300px;
 	border: 2px solid white;
 	padding: 8px;
-	margin: 50px
+	margin: 50px 35px;
 }
 
 #main .section .title {
@@ -624,6 +624,7 @@ canvas {
 #square-minimap canvas {
 	width: 200px;
 	height: 200px;
+	image-rendering: pixelated;
 }
 
 #square-leaderboard {

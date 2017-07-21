@@ -231,7 +231,7 @@ module.exports = {
 			}
 
 			// Remove the health from the player
-			self.health -= 1 + (player.damage / 15);
+			self.health -= 1.7 + (player.damage / 15);
 
 			// Send a hit package to all of the players
 			for(var n in players) {

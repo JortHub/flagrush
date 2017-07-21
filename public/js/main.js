@@ -4,13 +4,14 @@ var ctx = canvas.getContext("2d");
 var minimap_ctx = minimap_canvas.getContext("2d");
 minimap_ctx.imageSmoothingEnabled = true;
 minimap_ctx.imageSmoothingQuality = "medium";
+var restarts = 0;
 
 var main = io();
 var server = null;
 var loc = null;
 var ping = 0;
 
-var mapSize = 20000;
+var mapSize = 25000;
 
 var viewport = new viewport_(canvas, 0.2);
 var gameloop = new gameloop_(update, tick);
@@ -126,30 +127,21 @@ window.onresize = function() {
 	if(!started) {
 		generate_mainCanvas();
 	}
+	viewport.resize();
 }
 
-function load(length) {
-	length = length || 5000;
-	username = document.getElementById('username').value;
-	
-	var titleMenu = document.getElementById('title');
-	titleMenu.innerHTML = "<span>Loading...<div class='hint'>" + hints[Math.floor(hints.length * Math.random())] + "</div></span>";
-	titleMenu.className = "active";
-	titleMenu.style.zIndex = "10";
-
-	init();
-
-	setTimeout(function() {
-		start_when_loaded();
-	}, length);
+function load() {
+	if(restarts % 2 != 0) {
+		adplayer.startPreRoll();
+	}
+	else {
+		load_after_ad();
+	}
 }
 
 document.getElementById("username").addEventListener('keydown', function() {
 	if(!started && event.keyCode == 13) {
 		load();
-	}
-	if(!started && event.keyCode == 113) {
-		load(1000);
 	}	
 });
 
@@ -178,7 +170,7 @@ function verifyAdblocker() {
 			var buttons = document.getElementsByClassName("upgrade");
 
 			for(var n in buttons) {
-				//buttons[n].className = "upgrade adblocker";
+				buttons[n].className = "upgrade adblocker";
 			}
 		}
 		test.remove();
@@ -549,12 +541,29 @@ function removePlayer(name) {
 
 var restarting = false;
 
+function load_after_ad() {
+	username = document.getElementById('username').value;
+	
+	var titleMenu = document.getElementById('title');
+	titleMenu.innerHTML = "<span>Loading...<div class='hint'>" + hints[Math.floor(hints.length * Math.random())] + "</div></span>";
+	titleMenu.className = "active";
+	titleMenu.style.zIndex = "10";
+
+	init();
+
+	setTimeout(function() {
+		start_when_loaded();
+	}, 5000);
+}
+
 function restart(reason, length) {
 	length = length || 2000;
 
 	if(restarting) {
 		return;
 	}
+
+	restarts++;
 
 	restarting = true;
 	started = false;
@@ -684,14 +693,14 @@ function start(username) {
 	gameloop.start();
 }
 
-var szX = 5000;
-var szY = 18000;
-var szW = 10000;
-var szH = 2000;
-var flagX = 9500;
-var flagY = 2000;
+var flagX = 12000;
+var flagY = 2500;
 var flagW = 1000;
 var flagH = 1000;
+var szX = 7500;
+var szY = 23000;
+var szW = 10000;
+var szH = 2000;
 var flagCaptured = false;
 
 function calcMinimap(n) {
@@ -721,42 +730,42 @@ function update() {
 			if(me.team == 0) {
 				minimap_ctx.fillStyle = "#FF7F7F";
 
-				minimap_ctx.fillRect(calcMinimap(flagX) - 6, calcMinimap(flagY) - 6, calcMinimap(flagW) + 12, calcMinimap(flagH) + 12);
+				minimap_ctx.fillRect(calcMinimap(flagX) - 10, calcMinimap(flagY) - 10, calcMinimap(flagW) + 20, calcMinimap(flagH) + 20);
 				minimap_ctx.beginPath();
 				minimap_ctx.strokeStyle = "#FF0000";
 				minimap_ctx.lineWidth = "1";
-				minimap_ctx.rect(calcMinimap(flagX) - 6, calcMinimap(flagY) - 6, calcMinimap(flagW) + 12, calcMinimap(flagH) + 12);
+				minimap_ctx.rect(calcMinimap(flagX) - 10, calcMinimap(flagY) - 10, calcMinimap(flagW) + 20, calcMinimap(flagH) + 20);
 				minimap_ctx.stroke();
 
 				minimap_ctx.fillStyle = "#7F92FF";
-				minimap_ctx.fillRect(calcMinimap(szX) - 5, calcMinimap(szY) - 4, calcMinimap(szW) + 10, calcMinimap(szH) + 5);
+				minimap_ctx.fillRect(calcMinimap(szX) - 10, calcMinimap(szY) - 10, calcMinimap(szW) + 20, calcMinimap(szH) + 10);
 				minimap_ctx.beginPath();
 				minimap_ctx.strokeStyle = "#0026FF";
 				minimap_ctx.lineWidth = "1";
-				minimap_ctx.rect(calcMinimap(szX) - 5, calcMinimap(szY) - 4, calcMinimap(szW) + 10, calcMinimap(szH) + 5);
+				minimap_ctx.rect(calcMinimap(szX) - 10, calcMinimap(szY) - 10, calcMinimap(szW) + 20, calcMinimap(szH) + 10);
 				minimap_ctx.stroke();
 			}
 			else {
 				minimap_ctx.fillStyle = "#7F92FF";
-				minimap_ctx.fillRect(calcMinimap(flagX) - 6, calcMinimap(flagY) - 6, calcMinimap(flagW) + 12, calcMinimap(flagH) + 12);
+				minimap_ctx.fillRect(calcMinimap(flagX) - 10, calcMinimap(flagY) - 10, calcMinimap(flagW) + 20, calcMinimap(flagH) + 20);
 				minimap_ctx.beginPath();
 				minimap_ctx.strokeStyle = "#0026FF";
 				minimap_ctx.lineWidth = "1";
-				minimap_ctx.rect(calcMinimap(flagX) - 6, calcMinimap(flagY) - 6, calcMinimap(flagW) + 12, calcMinimap(flagH) + 12);
+				minimap_ctx.rect(calcMinimap(flagX) - 10, calcMinimap(flagY) - 10, calcMinimap(flagW) + 20, calcMinimap(flagH) + 20);
 				minimap_ctx.stroke();
 
 				minimap_ctx.fillStyle = "#FF7F7F";
-				minimap_ctx.fillRect(calcMinimap(szX) - 5, calcMinimap(szY) - 4, calcMinimap(szW) + 10, calcMinimap(szH) + 5);
+				minimap_ctx.fillRect(calcMinimap(szX) - 10, calcMinimap(szY) - 10, calcMinimap(szW) + 20, calcMinimap(szH) + 10);
 				minimap_ctx.beginPath();
 				minimap_ctx.strokeStyle = "#FF0000";
 				minimap_ctx.lineWidth = "1";
-				minimap_ctx.rect(calcMinimap(szX) - 5, calcMinimap(szY) - 4, calcMinimap(szW) + 10, calcMinimap(szH) + 5);
+				minimap_ctx.rect(calcMinimap(szX) - 10, calcMinimap(szY) - 10, calcMinimap(szW) + 20, calcMinimap(szH) + 10);
 				minimap_ctx.stroke();
 			}
 
 			if(!flagCaptured && time_left != 0) {
 				if(minimapAniTime > 60) {
-					minimap_ctx.drawImage(flag_small.img, calcMinimap(flagX) - 3, calcMinimap(flagY) - 3, calcMinimap(flagW) + 6, calcMinimap(flagH) + 6);
+					minimap_ctx.drawImage(flag_small.img, calcMinimap(flagX) - 5, calcMinimap(flagY) - 5, calcMinimap(flagW) + 10, calcMinimap(flagH) + 10);
 				}
 
 				minimapAniTime++;
@@ -765,11 +774,11 @@ function update() {
 				}
 			}
 			else if(!flagCaptured) {
-				minimap_ctx.drawImage(flag_small.img, calcMinimap(flagX) - 3, calcMinimap(flagY) - 3, calcMinimap(flagW) + 6, calcMinimap(flagH) + 6);
+				minimap_ctx.drawImage(flag_small.img, calcMinimap(flagX) - 5, calcMinimap(flagY) - 5, calcMinimap(flagW) + 10, calcMinimap(flagH) + 10);
 			}
 			
 			if(me.team == 0) {
-				minimap_ctx.drawImage(home_small.img, 91, 184, 18, 18);
+				minimap_ctx.drawImage(home_small.img, 90, 182, 20, 20);
 			}
 
 			for(var n in players) {
