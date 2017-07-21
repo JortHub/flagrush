@@ -50,7 +50,7 @@ module.exports = function(io) {
 	self.capturing = false;
 
 	// The maximum capture time
-	self.maxCaptureTime = 100;
+	self.maxCaptureTime = 200;
 
 	// The current capture time
 	self.captureTime = self.maxCaptureTime;

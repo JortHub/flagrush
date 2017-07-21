@@ -714,7 +714,7 @@ function update() {
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 	if(document.getElementById("game-text-title").innerHTML.startsWith("Capturing the flag")) {
-		time_left = 10000 - (Date.now() - start_date);
+		time_left = 20000 - (Date.now() - start_date);
 		document.getElementById("game-text-title").innerHTML = "Capturing the flag<br>" + Math.round(time_left/1000) + " seconds left";
 	}
 
